@@ -1,29 +1,20 @@
 import { supabase } from "@/lib/supabase"
+import { notFound } from "next/navigation"
 
 interface PageProps {
   params: { username: string }
 }
 
 export default async function StudentProfile({ params }: PageProps) {
-  const { data: students } = await supabase
+  const { username } = await params
+
+  const { data: student } = await supabase
     .from("students")
-    .select("name, email, college")
+    .select("name, email, college, username")
+    .eq("username", username)
+    .single()
 
-  const name = decodeURIComponent(params.username).trim()
-  const student = students?.find(s => 
-    s.name?.trim().toLowerCase() === name.toLowerCase()
-  ) || students?.[0]
-
-  if (!student) {
-    return (
-      <main className="min-h-screen bg-[#F6F5F1] flex items-center justify-center">
-        <div className="text-center">
-          <p className="font-serif text-2xl text-[#0E0E0C] mb-2">Student not found</p>
-          <p className="text-sm text-[#6A6A66]">This profile does not exist yet.</p>
-        </div>
-      </main>
-    )
-  }
+  if (!student) notFound()
 
   return (
     <main className="min-h-screen bg-[#F6F5F1]">
@@ -55,18 +46,21 @@ export default async function StudentProfile({ params }: PageProps) {
                 <p className="text-sm text-[#6A6A66]">
                   {student.college || "College not set"}
                 </p>
+                <p className="text-xs font-mono text-[#9A9A95] mt-1">
+                  verq.app/s/{student.username}
+                </p>
               </div>
             </div>
             <div className="text-right">
               <div className="font-serif text-4xl text-[#0E0E0C] leading-none mb-1">--</div>
               <div className="text-xs text-[#9A9A95] font-mono">Verq Score</div>
               <div className="text-xs bg-[#E4F4EE] text-[#0A7250] px-2 py-0.5 rounded-full font-mono mt-1">
-                Pending verification
+                Pending
               </div>
             </div>
           </div>
 
-          <div className="border-t border-black/06 pt-6">
+          <div className="border-t border-black/6 pt-6">
             <p className="text-xs font-mono text-[#9A9A95] uppercase tracking-wider mb-3">
               Details
             </p>
@@ -90,17 +84,14 @@ export default async function StudentProfile({ params }: PageProps) {
           {["Code quality", "Project complexity", "Commit consistency", "Documentation", "Deployment"].map((dim) => (
             <div key={dim} className="flex items-center gap-3 mb-3">
               <span className="text-sm text-[#6A6A66] w-40">{dim}</span>
-              <div className="flex-1 h-1.5 bg-[#E2E1DC] rounded-full">
-                <div className="h-1.5 bg-[#E2E1DC] rounded-full w-0"></div>
-              </div>
+              <div className="flex-1 h-1.5 bg-[#E2E1DC] rounded-full" />
               <span className="text-xs font-mono text-[#9A9A95]">--</span>
             </div>
           ))}
           <p className="text-xs text-[#9A9A95] mt-4">
-            Score will appear after GitHub verification is complete.
+            Score appears after GitHub verification is complete.
           </p>
         </div>
-
       </div>
     </main>
   )

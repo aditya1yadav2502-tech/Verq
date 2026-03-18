@@ -7,6 +7,7 @@ export default function SignupPage() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [githubUrl, setGithubUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
 
@@ -28,9 +29,13 @@ export default function SignupPage() {
       return
     }
 
-    await supabase.from("students").insert({ name, email })
+    await supabase.from("students").insert({
+      name,
+      email,
+      github_url: githubUrl
+    })
 
-    setMessage("Check your email for a verification link!")
+    setMessage("Account created! Welcome to Verq.")
     setLoading(false)
   }
 
@@ -86,7 +91,7 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">
               Password
             </label>
@@ -97,6 +102,22 @@ export default function SignupPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0F52BA] transition-colors"
             />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">
+              GitHub profile URL
+            </label>
+            <input
+              type="url"
+              placeholder="https://github.com/yourusername"
+              value={githubUrl}
+              onChange={(e) => setGithubUrl(e.target.value)}
+              className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0F52BA] transition-colors"
+            />
+            <p className="text-xs text-[#9A9A95] mt-1.5">
+              This is what Verq scores — make sure it is your real GitHub.
+            </p>
           </div>
 
           {message && (

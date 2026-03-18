@@ -85,11 +85,7 @@ export default async function StudentProfile({ params }: PageProps) {
                 <div className="col-span-2">
                   <p className="text-xs text-[#9A9A95] mb-1">GitHub</p>
                   
-                    href={student.github_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-[#0F52BA] hover:underline"
-                  <a>
+                    <a href={student.github_url} target="_blank" rel="noopener noreferrer" className="text-sm text-[#0F52BA] hover:underline">
                     {student.github_url}
                   </a>
                 </div>

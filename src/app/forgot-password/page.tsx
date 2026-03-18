@@ -7,99 +7,91 @@ import Link from "next/link"
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
-  const [sent, setSent] = useState(false)
   const [message, setMessage] = useState("")
 
   async function handleReset() {
     setLoading(true)
     setMessage("")
-
+    
     const supabase = createClient()
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
-    })
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
 
     if (error) {
       setMessage(error.message)
     } else {
-      setSent(true)
+      setMessage("Check your email for a password reset link.")
     }
     setLoading(false)
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F5F1] flex flex-col items-center justify-center px-6">
-      <div className="w-full max-w-md">
+    <main className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center px-6 selection:bg-[#0F52BA]/20 relative overflow-hidden">
+      
+      {/* Background Orbs */}
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#0F52BA]/10 rounded-full filter blur-[100px] pointer-events-none -translate-y-1/2 -translate-x-1/2" />
 
-        <Link href="/" className="flex items-center gap-2 mb-8">
-          <div className="w-7 h-7 bg-[#0F52BA] rounded-lg flex items-center justify-center">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M3 13L8 3L13 13" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M5 9.5H11" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+      <div className="w-full max-w-md relative z-10 animate-fade-in">
+
+        <Link href="/" className="flex items-center justify-center gap-2 mb-10 hover:scale-105 transition-transform">
+          <div className="w-8 h-8 bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] rounded-full flex items-center justify-center shadow-inner">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" className="text-white drop-shadow-sm">
+              <path fillRule="evenodd" d="M8 0a6 6 0 0 0-6 6c0 4.1 5.3 9.4 5.6 9.7a1 1 0 0 0 1.4 0C9.3 14.8 14 10.1 14 6a6 6 0 0 0-6-6Zm0 9a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
             </svg>
           </div>
-          <span className="font-serif text-lg font-medium text-[#0E0E0C]">verq</span>
+          <span className="font-serif text-2xl font-bold text-[#0E0E0C] tracking-tight">verq</span>
         </Link>
 
-        {sent ? (
-          <div className="bg-white border border-black/10 rounded-2xl p-8 shadow-sm text-center">
-            <div className="w-12 h-12 bg-[#E4F4EE] rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0A7250" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-            </div>
-            <h1 className="font-serif text-2xl text-[#0E0E0C] mb-2">Check your email</h1>
-            <p className="text-sm text-[#6A6A66] mb-6">
-              We sent a password reset link to <strong className="text-[#0E0E0C]">{email}</strong>. Click the link to reset your password.
-            </p>
-            <Link href="/signin" className="text-sm text-[#0F52BA] font-medium hover:underline">
-              ← Back to sign in
-            </Link>
+        <div className="text-center mb-8">
+          <h1 className="font-serif text-4xl text-[#0E0E0C] font-bold mb-2 tracking-tight">
+            Reset password
+          </h1>
+          <p className="text-[#6A6A66]">
+            Enter your email to receive a recovery link.
+          </p>
+        </div>
+
+        <div className="bg-white/80 backdrop-blur-xl border border-black/5 rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
+
+          <div className="mb-8">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A6A66] mb-2 pl-1">
+              Email
+            </label>
+            <input
+              type="email"
+              placeholder="you@college.edu"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleReset()}
+              className="w-full bg-[#FAFAFA] border border-black/5 rounded-2xl px-4 py-3.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:ring-2 focus:ring-[#0F52BA]/20 focus:border-[#0F52BA]/30 hover:bg-white transition-all inset-shadow-sm"
+            />
           </div>
-        ) : (
-          <>
-            <h1 className="font-serif text-3xl text-[#0E0E0C] mb-2">Reset password</h1>
-            <p className="text-sm text-[#6A6A66] mb-8">
-              Enter your email and we&apos;ll send you a link to reset your password.
-            </p>
 
-            <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm">
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">Email</label>
-                <input
-                  type="email"
-                  placeholder="you@iitd.ac.in"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleReset()}
-                  className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0F52BA] transition-colors"
-                />
-              </div>
-
-              {message && (
-                <div className="mb-4 p-3 bg-[#FEF2F2] border border-[#FECACA] rounded-lg text-sm text-[#DC2626]">
-                  {message}
-                </div>
-              )}
-
-              <button
-                onClick={handleReset}
-                disabled={loading || !email}
-                className="w-full bg-[#0F52BA] text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-[#0a45a0] transition-colors disabled:opacity-50"
-              >
-                {loading ? "Sending..." : "Send reset link"}
-              </button>
+          {message && (
+            <div className={`mb-6 p-4 rounded-xl text-sm font-medium shadow-sm ${
+              message.includes("Check your email") 
+                ? "bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250]"
+                : "bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626]"
+            }`}>
+              {message}
             </div>
+          )}
 
-            <p className="text-center text-sm text-[#6A6A66] mt-4">
-              Remember your password?{" "}
-              <Link href="/signin" className="text-[#0F52BA] font-medium hover:underline">
-                Sign in
-              </Link>
-            </p>
-          </>
-        )}
+          <button
+            onClick={handleReset}
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-[#0F52BA] to-[#0A3D8F] text-white text-sm font-semibold py-3.5 rounded-2xl shadow-[0_4px_14px_rgba(15,82,186,0.2)] hover:shadow-[0_6px_20px_rgba(15,82,186,0.3)] hover:-translate-y-0.5 transition-all disabled:opacity-50"
+          >
+            {loading ? "Sending..." : "Send link"}
+          </button>
+
+        </div>
+
+        <p className="text-center text-sm font-medium text-[#6A6A66] mt-8">
+          Remember it?{" "}
+          <Link href="/signin" className="text-[#0E0E0C] hover:text-[#0F52BA] transition-colors hover:underline">
+            Back to sign in
+          </Link>
+        </p>
 
       </div>
     </main>

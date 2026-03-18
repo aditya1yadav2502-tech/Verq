@@ -3,111 +3,129 @@ import Link from "next/link"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#F6F5F1]">
+    <main className="min-h-screen bg-[#FAFAFA] text-[#0E0E0C] overflow-hidden selection:bg-[#0F52BA]/20">
       <Navbar />
 
-      {/* Hero */}
-      <section className="flex flex-col items-center justify-center px-6 pt-32 pb-20 sm:pt-40 sm:pb-28">
-        <div className="max-w-2xl w-full text-center">
-          <p className="text-xs font-mono text-[#0A7250] bg-[#E4F4EE] px-3 py-1 rounded-full inline-block mb-6">
-            India&apos;s first verified builder platform
-          </p>
-          <h1 className="font-serif text-4xl sm:text-6xl text-[#0E0E0C] mb-4 leading-tight">
-            Companies find you.<br/>Not the other way around.
-          </h1>
-          <p className="text-base text-[#6A6A66] mb-8 leading-relaxed max-w-lg mx-auto">
-            Build real projects. Get verified by Verq. Let companies discover you — no applications, no ATS, no silence.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/signup"
-              className="inline-block bg-[#0E0E0C] text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-[#3B3B38] transition-colors"
-            >
-              Get my Verq score
-            </Link>
-            <Link
-              href="/leaderboard"
-              className="inline-block bg-white border border-black/10 text-[#0E0E0C] text-sm font-semibold px-6 py-3 rounded-xl hover:bg-[#F0EFEB] transition-colors"
-            >
-              View leaderboard
-            </Link>
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 sm:pt-48 sm:pb-32 px-6 overflow-hidden">
+        {/* Glowing Orbs */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none">
+          <div className="absolute top-[10%] left-[20%] w-72 h-72 bg-[#0F52BA]/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-float" />
+          <div className="absolute top-[20%] right-[20%] w-96 h-96 bg-[#0A7250]/15 rounded-full mix-blend-multiply filter blur-[100px] opacity-60 animate-float" style={{ animationDelay: "2s" }} />
+          <div className="absolute -bottom-[10%] left-[40%] w-80 h-80 bg-[#D97706]/15 rounded-full mix-blend-multiply filter blur-[90px] opacity-50 animate-float" style={{ animationDelay: "4s" }} />
+        </div>
+
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="flex flex-col items-center text-center animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-black/5 shadow-sm text-sm font-medium text-[#0E0E0C] mb-8 hover:shadow-md transition-shadow">
+              <span className="flex h-2 w-2 rounded-full bg-[#0A7250]"></span>
+              India&apos;s first verified builder platform
+            </div>
+            
+            <h1 className="font-serif text-5xl sm:text-7xl lg:text-[5rem] tracking-tight leading-[1.1] mb-6 drop-shadow-sm">
+              Companies find you.<br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0E0E0C] via-[#3B3B38] to-[#6A6A66]">
+                Not the other way around.
+              </span>
+            </h1>
+            
+            <p className="text-lg sm:text-xl text-[#6A6A66] mb-10 leading-relaxed max-w-2xl mx-auto">
+              Build real projects. Get verified by the Verq engine. Let top companies discover your talent instantly — no resumes, no ATS, no silence.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full sm:w-auto">
+              <Link
+                href="/signup"
+                className="w-full sm:w-auto px-8 py-4 bg-[#0E0E0C] text-white text-base font-semibold rounded-full shadow-[0_0_40px_rgba(15,82,186,0.3)] hover:shadow-[0_0_60px_rgba(15,82,186,0.5)] hover:-translate-y-1 transition-all duration-300 border border-white/10"
+              >
+                Get your Verq score
+              </Link>
+              <Link
+                href="/explore"
+                className="w-full sm:w-auto px-8 py-4 bg-white/60 backdrop-blur-md border border-black/10 text-[#0E0E0C] text-base font-semibold rounded-full hover:bg-white hover:border-black/20 hover:-translate-y-1 transition-all duration-300"
+              >
+                Explore builders
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* How it works */}
-      <section className="px-6 pb-20">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-mono text-[#0F52BA] bg-[#E8EFFE] px-3 py-1 rounded-full inline-block mb-4">
-            How it works
-          </p>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#0E0E0C] mb-10">
-            Three steps to get discovered.
-          </h2>
+      <section className="px-6 py-24 bg-white relative">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16 animate-slide-up">
+            <h2 className="font-serif text-3xl sm:text-5xl text-[#0E0E0C] mb-4 tracking-tight">
+              Three steps to get discovered.
+            </h2>
+            <p className="text-base text-[#6A6A66] max-w-lg mx-auto">
+              The fastest way to prove your skills and bypass traditional recruiting screens.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm">
-              <div className="w-10 h-10 bg-[#E8EFFE] rounded-xl flex items-center justify-center mb-4">
-                <span className="font-serif text-lg text-[#0F52BA] font-medium">1</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {[
+              { num: "1", title: "Sign up & link GitHub", desc: "Create your account securely and connect your public GitHub profile.", iconBg: "bg-[#E8EFFE]", iconColor: "text-[#0F52BA]" },
+              { num: "2", title: "The Engine analyzes", desc: "Our algorithm automatically evaluates your repos across 5 critical dimensions.", iconBg: "bg-[#E4F4EE]", iconColor: "text-[#0A7250]" },
+              { num: "3", title: "Companies find you", desc: "Top tech companies actively browse Verq to find verified builders directly.", iconBg: "bg-[#FEF3C7]", iconColor: "text-[#D97706]" }
+            ].map((step, i) => (
+              <div 
+                key={i} 
+                className="bg-[#FAFAFA] border border-black/5 rounded-3xl p-8 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-300 group"
+              >
+                <div className={`w-14 h-14 ${step.iconBg} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                  <span className={`font-serif text-2xl ${step.iconColor} font-semibold`}>{step.num}</span>
+                </div>
+                <h3 className="font-serif text-xl text-[#0E0E0C] mb-3">{step.title}</h3>
+                <p className="text-[#6A6A66] leading-relaxed">
+                  {step.desc}
+                </p>
               </div>
-              <h3 className="font-serif text-lg text-[#0E0E0C] mb-2">Sign up & link GitHub</h3>
-              <p className="text-sm text-[#6A6A66] leading-relaxed">
-                Create your account with your college email and connect your GitHub profile.
-              </p>
-            </div>
-
-            <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm">
-              <div className="w-10 h-10 bg-[#E4F4EE] rounded-xl flex items-center justify-center mb-4">
-                <span className="font-serif text-lg text-[#0A7250] font-medium">2</span>
-              </div>
-              <h3 className="font-serif text-lg text-[#0E0E0C] mb-2">Get your Verq score</h3>
-              <p className="text-sm text-[#6A6A66] leading-relaxed">
-                Our engine analyzes your repos across 5 dimensions: code quality, complexity, consistency, documentation, and deployment.
-              </p>
-            </div>
-
-            <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm">
-              <div className="w-10 h-10 bg-[#FEF3C7] rounded-xl flex items-center justify-center mb-4">
-                <span className="font-serif text-lg text-[#D97706] font-medium">3</span>
-              </div>
-              <h3 className="font-serif text-lg text-[#0E0E0C] mb-2">Get discovered</h3>
-              <p className="text-sm text-[#6A6A66] leading-relaxed">
-                Companies browse the leaderboard and find verified builders. No resumes, no applications.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Score dimensions */}
-      <section className="px-6 pb-20">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-mono text-[#9A9A95] bg-[#EEEDEA] px-3 py-1 rounded-full inline-block mb-4">
-            What we measure
-          </p>
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#0E0E0C] mb-8">
-            Five dimensions of real skill.
-          </h2>
-          <div className="bg-white border border-black/10 rounded-2xl p-6 sm:p-8 shadow-sm">
+      <section className="px-6 py-24 bg-[#0E0E0C] text-white relative overflow-hidden">
+        {/* Subtle dark glow */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#0F52BA]/20 rounded-full filter blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#0A7250]/15 rounded-full filter blur-[120px] pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div className="animate-slide-up">
+            <h2 className="font-serif text-4xl sm:text-5xl mb-6 tracking-tight leading-tight">
+              Five dimensions of<br/>real skill.
+            </h2>
+            <p className="text-[#9A9A95] text-lg leading-relaxed mb-8 max-w-md">
+              Verq doesn&apos;t just count your stars. We look at code quality, architecture complexity, consistency, documentation habits, and how you deploy.
+            </p>
+            <div className="inline-flex items-center gap-2 text-sm text-[#0F52BA] font-medium bg-[#0F52BA]/10 px-4 py-2.5 rounded-full border border-[#0F52BA]/30 hover:bg-[#0F52BA]/20 transition-colors">
+              <span className="w-2 h-2 rounded-full bg-[#0F52BA] animate-pulse"></span>
+              Live Dynamic Scoring
+            </div>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl p-8 shadow-2xl animate-float">
             {[
-              { name: "Code quality", desc: "Language diversity, repo quality, community validation", pct: 85 },
-              { name: "Project complexity", desc: "Multi-language repos, depth of work, open-source impact", pct: 72 },
-              { name: "Commit consistency", desc: "Regular coding habits over the past 90 days", pct: 90 },
-              { name: "Documentation", desc: "README presence and quality across repositories", pct: 60 },
-              { name: "Deployment", desc: "Shipping to production — CI/CD, Docker, cloud configs", pct: 45 },
+              { name: "Code quality", desc: "Language diversity, repo quality", pct: 85, color: "bg-[#0F52BA]" },
+              { name: "Project complexity", desc: "Architecture depth, full-stack", pct: 72, color: "bg-purple-500" },
+              { name: "Commit consistency", desc: "Habits over the past 90 days", pct: 90, color: "bg-[#0A7250]" },
+              { name: "Documentation", desc: "README presence and clarity", pct: 60, color: "bg-[#D97706]" },
+              { name: "Deployment", desc: "CI/CD, external hosting config", pct: 45, color: "bg-blue-400" },
             ].map((dim) => (
-              <div key={dim.name} className="mb-5 last:mb-0">
-                <div className="flex items-baseline justify-between mb-1.5">
-                  <span className="text-sm font-medium text-[#0E0E0C]">{dim.name}</span>
-                  <span className="text-xs text-[#9A9A95] font-mono">{dim.pct}</span>
+              <div key={dim.name} className="mb-6 last:mb-0 group">
+                <div className="flex items-baseline justify-between mb-2">
+                  <span className="text-sm font-medium text-white/90">{dim.name}</span>
+                  <span className="text-xs text-white/50 font-mono tracking-wider">{dim.pct}/100</span>
                 </div>
-                <div className="h-2 bg-[#E2E1DC] rounded-full overflow-hidden mb-1.5">
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-2 relative">
                   <div
-                    className="h-2 rounded-full bg-[#0F52BA]"
+                    className={`h-full rounded-full ${dim.color} transition-all duration-1000 ease-out group-hover:brightness-125`}
                     style={{ width: `${dim.pct}%` }}
                   />
                 </div>
-                <p className="text-xs text-[#9A9A95]">{dim.desc}</p>
+                <p className="text-xs text-white/50">{dim.desc}</p>
               </div>
             ))}
           </div>
@@ -115,44 +133,44 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 pb-20">
-        <div className="max-w-3xl mx-auto bg-[#0E0E0C] rounded-2xl p-8 sm:p-12 text-center">
-          <h2 className="font-serif text-2xl sm:text-3xl text-white mb-3">
+      <section className="px-6 py-32 bg-[#FAFAFA]">
+        <div className="max-w-4xl mx-auto text-center animate-slide-up">
+          <h2 className="font-serif text-4xl sm:text-6xl text-[#0E0E0C] mb-6 tracking-tight">
             Ready to get verified?
           </h2>
-          <p className="text-sm text-[#9A9A95] mb-6 max-w-md mx-auto">
-            Join hundreds of student builders who are getting discovered by companies through their work, not words.
+          <p className="text-lg text-[#6A6A66] mb-10 max-w-xl mx-auto">
+            Join hundreds of student builders who are getting discovered by companies through their work, not their resumes.
           </p>
           <Link
             href="/signup"
-            className="inline-block bg-[#0F52BA] text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-[#0a45a0] transition-colors"
+            className="inline-block px-10 py-5 bg-[#0E0E0C] text-white text-lg font-semibold rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300"
           >
-            Create your account →
+            Create your account now
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-black/10 px-6 py-8">
-        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 bg-[#0F52BA] rounded flex items-center justify-center">
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+      <footer className="border-t border-black/5 bg-white px-6 py-10">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] rounded-full flex items-center justify-center shadow-inner">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="drop-shadow-sm">
                 <path d="M3 13L8 3L13 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M5 9.5H11" stroke="white" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
-            <span className="text-sm text-[#9A9A95]">Verq © 2026</span>
+            <span className="font-serif font-bold tracking-tight text-[#0E0E0C]">verq © 2026</span>
           </div>
-          <div className="flex items-center gap-6">
-            <Link href="/leaderboard" className="text-xs text-[#9A9A95] hover:text-[#0E0E0C] transition-colors">
+          <div className="flex items-center gap-8">
+            <Link href="/leaderboard" className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] transition-colors">
               Leaderboard
             </Link>
-            <Link href="/explore" className="text-xs text-[#9A9A95] hover:text-[#0E0E0C] transition-colors">
+            <Link href="/explore" className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] transition-colors">
               Explore
             </Link>
-            <Link href="/signup" className="text-xs text-[#9A9A95] hover:text-[#0E0E0C] transition-colors">
-              Sign up
+            <Link href="/company/signup" className="text-sm font-medium text-[#0F52BA] hover:text-[#0A3D8F] hover:underline transition-colors">
+              For Companies
             </Link>
           </div>
         </div>

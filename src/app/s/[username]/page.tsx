@@ -22,7 +22,6 @@ export default async function StudentProfile({ params }: PageProps) {
 
   const supabase = await createClient()
 
-  // Direct query by name instead of full table scan
   const { data: student } = await supabase
     .from("students")
     .select("name, email, college, github_url, verq_score, score_code_quality, score_project_complexity, score_commit_consistency, score_documentation, score_deployment, scored_at, top_repos, languages")
@@ -31,16 +30,18 @@ export default async function StudentProfile({ params }: PageProps) {
 
   if (!student) {
     return (
-      <main className="min-h-screen bg-[#F6F5F1] pt-14">
+      <main className="min-h-screen bg-[#FAFAFA] pt-24 text-[#0E0E0C]">
         <Navbar />
-        <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 56px)" }}>
-          <div className="text-center">
-            <div className="font-serif text-6xl text-[#E2E1DC] mb-4">?</div>
-            <p className="font-serif text-2xl text-[#0E0E0C] mb-2">Student not found</p>
-            <p className="text-sm text-[#6A6A66] mb-6">This profile does not exist yet.</p>
+        <div className="flex items-center justify-center min-h-[70vh] animate-fade-in">
+          <div className="text-center bg-white border border-black/5 rounded-3xl p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="w-16 h-16 bg-[#F6F5F1] rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <span className="font-serif text-3xl text-[#9A9A95]">?</span>
+            </div>
+            <p className="font-serif text-3xl text-[#0E0E0C] mb-3">Builder not found</p>
+            <p className="text-[#6A6A66] mb-8 max-w-sm mx-auto">This profile doesn&apos;t exist yet or they haven&apos;t generated their Verq score.</p>
             <Link
               href="/leaderboard"
-              className="inline-block bg-[#0F52BA] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-[#0a45a0] transition-colors"
+              className="inline-block bg-[#0E0E0C] text-white px-6 py-3 rounded-full hover:bg-[#3B3B38] transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
             >
               Browse leaderboard
             </Link>
@@ -67,165 +68,186 @@ export default async function StudentProfile({ params }: PageProps) {
     return "bg-[#D97706]"
   }
 
+  function getScoreGlow(score: number | null): string {
+    if (score === null || score === undefined) return ""
+    if (score >= 70) return "shadow-[0_0_40px_rgba(10,114,80,0.2)]"
+    if (score >= 40) return "shadow-[0_0_40px_rgba(15,82,186,0.2)]"
+    return "shadow-[0_0_40px_rgba(217,119,6,0.2)]"
+  }
+
   return (
-    <main className="min-h-screen bg-[#F6F5F1] pt-14">
+    <main className="min-h-screen bg-[#FAFAFA] pt-24 pb-20 selection:bg-[#0F52BA]/20">
       <Navbar />
 
-      <div className="max-w-2xl mx-auto px-6 py-12">
-
-        <div className="bg-white border border-black/10 rounded-2xl p-6 sm:p-8 shadow-sm mb-6">
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-[#E8EFFE] rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="font-serif text-2xl text-[#0F52BA] font-medium">
-                  {student.name?.charAt(0).toUpperCase()}
-                </span>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        
+        {/* Main Profile Header */}
+        <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 animate-slide-up relative overflow-hidden">
+          
+          <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-10 relative z-10">
+            <div className="flex items-center gap-6">
+              <div className="w-24 h-24 bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] rounded-full flex items-center justify-center p-1 shadow-inner flex-shrink-0 animate-fade-in">
+                <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
+                  <span className="font-serif text-4xl text-[#0F52BA] font-bold">
+                    {student.name?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
               </div>
               <div>
-                <h1 className="font-serif text-2xl text-[#0E0E0C] mb-1">
+                <h1 className="font-serif text-3xl sm:text-4xl text-[#0E0E0C] font-bold mb-2 tracking-tight">
                   {student.name}
                 </h1>
-                <p className="text-sm text-[#6A6A66]">
+                <p className="text-[#6A6A66] flex items-center gap-2">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" className="opacity-70">
+                    <path fillRule="evenodd" d="M8 0a6 6 0 0 0-6 6c0 4.1 5.3 9.4 5.6 9.7a1 1 0 0 0 1.4 0C9.3 14.8 14 10.1 14 6a6 6 0 0 0-6-6Zm0 9a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+                  </svg>
                   {student.college || "College not set"}
                 </p>
+                <div className="mt-3">
+                  <BookmarkButton studentEmail={student.email} />
+                </div>
               </div>
             </div>
-            <div className="text-left sm:text-right">
-              <div className="font-serif text-4xl text-[#0E0E0C] leading-none mb-1">
+            
+            <div className={`text-center md:text-right bg-white border border-black/5 rounded-3xl p-6 min-w-[160px] ${getScoreGlow(student.verq_score)} transition-shadow duration-500`}>
+              <div className="font-serif text-5xl sm:text-6xl text-[#0E0E0C] font-bold mb-1 tracking-tighter">
                 {isScored ? student.verq_score : "--"}
               </div>
-              <div className="text-xs text-[#9A9A95] font-mono">Verq Score</div>
+              <div className="text-xs text-[#9A9A95] font-mono tracking-widest uppercase mb-3">Verq Score</div>
               {isScored ? (
-                <div className="text-xs bg-[#E4F4EE] text-[#0A7250] px-2 py-0.5 rounded-full font-mono mt-1 inline-block">
+                <div className="text-xs bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250] py-1 px-3 rounded-full font-mono inline-block shadow-sm">
                   Verified ✓
                 </div>
               ) : (
-                <div className="text-xs bg-[#FEF3C7] text-[#D97706] px-2 py-0.5 rounded-full font-mono mt-1 inline-block">
-                  Pending verification
+                <div className="text-xs bg-[#FEF3C7] border border-[#FDE68A] text-[#D97706] py-1 px-3 rounded-full font-mono inline-block shadow-sm">
+                  Pending
                 </div>
               )}
-              {student.email && <BookmarkButton studentEmail={student.email} />}
             </div>
           </div>
 
-          <div className="border-t border-black/6 pt-6">
-            <p className="text-xs font-mono text-[#9A9A95] uppercase tracking-wider mb-3">
-              Details
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Socials & Basic Details */}
+          <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-black/5">
+            <div>
+              <p className="text-[10px] uppercase font-mono tracking-widest text-[#9A9A95] mb-1">Email</p>
+              <p className="text-sm font-medium text-[#0E0E0C]">{student.email}</p>
+            </div>
+            {student.github_url && (
               <div>
-                <p className="text-xs text-[#9A9A95] mb-1">Email</p>
-                <p className="text-sm text-[#0E0E0C]">{student.email}</p>
+                <p className="text-[10px] uppercase font-mono tracking-widest text-[#9A9A95] mb-1">GitHub</p>
+                <a href={student.github_url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#0F52BA] hover:underline flex items-center gap-1.5">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                    <path fillRule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                  </svg>
+                  {student.github_url.replace("https://github.com/", "")}
+                </a>
               </div>
-              <div>
-                <p className="text-xs text-[#9A9A95] mb-1">College</p>
-                <p className="text-sm text-[#0E0E0C]">{student.college || "Not set"}</p>
+            )}
+            {isScored && student.scored_at && (
+              <div className="ml-auto text-right w-full sm:w-auto mt-4 sm:mt-0">
+                <p className="text-[10px] uppercase font-mono tracking-widest text-[#9A9A95] mb-1">Last Updated</p>
+                <p className="text-sm font-medium text-[#0E0E0C]">
+                  {new Date(student.scored_at).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+                </p>
               </div>
-              {student.github_url && (
-                <div className="col-span-1 sm:col-span-2">
-                  <p className="text-xs text-[#9A9A95] mb-1">GitHub</p>
-                  <a href={student.github_url} target="_blank" rel="noopener noreferrer" className="text-sm text-[#0F52BA] hover:underline break-all">
-                    {student.github_url}
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left Column: Top Repos & Languages */}
+          <div className="lg:col-span-2 space-y-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            
+            {student.languages && student.languages.length > 0 && (
+              <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <h3 className="font-serif text-xl font-bold text-[#0E0E0C] mb-5 tracking-tight">Languages</h3>
+                <div className="flex flex-wrap gap-2.5">
+                  {(student.languages as { name: string; bytes: number }[]).slice(0, 5).map((lang) => (
+                    <div key={lang.name} className="flex items-center gap-2 bg-[#FAFAFA] border border-black/5 px-3 py-1.5 rounded-full hover:bg-white hover:shadow-sm hover:-translate-y-0.5 transition-all">
+                      <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] shadow-sm" />
+                      <span className="text-sm font-medium text-[#0E0E0C]">{lang.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {student.top_repos && student.top_repos.length > 0 ? (
+              <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="font-serif text-xl font-bold text-[#0E0E0C] tracking-tight">Best Work</h3>
+                  <a href={student.github_url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#0F52BA] hover:underline">
+                    View GitHub →
                   </a>
                 </div>
-              )}
-            </div>
+                <div className="grid grid-cols-1 gap-4">
+                  {(student.top_repos as { name: string; description: string; url: string; stars: number; language: string }[]).map((repo) => (
+                    <a
+                      key={repo.name}
+                      href={repo.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block p-5 bg-[#FAFAFA] border border-black/5 rounded-2xl hover:bg-white hover:border-black/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all group"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <p className="text-base font-bold text-[#0E0E0C] group-hover:text-[#0F52BA] transition-colors">{repo.name}</p>
+                        {repo.stars > 0 && (
+                          <div className="flex items-center gap-1.5 bg-white border border-black/5 px-2 py-0.5 rounded-md text-xs font-medium text-[#6A6A66] shadow-sm">
+                            <span className="text-[#D97706]">★</span>
+                            <span>{repo.stars}</span>
+                          </div>
+                        )}
+                      </div>
+                      {repo.description && (
+                        <p className="text-sm text-[#6A6A66] mb-4 line-clamp-2 leading-relaxed">{repo.description}</p>
+                      )}
+                      {repo.language && (
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-2 h-2 rounded-full bg-[#0E0E0C]" />
+                          <span className="text-xs font-mono font-medium text-[#9A9A95]">{repo.language}</span>
+                        </div>
+                      )}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : (
+                <div className="bg-white border border-black/5 rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center text-[#9A9A95]">
+                  No public repositories found.
+                </div>
+            )}
           </div>
 
-          {/* Top Languages */}
-          {student.languages && student.languages.length > 0 && (
-            <div className="border-t border-black/6 pt-6 mt-6">
-              <p className="text-xs font-mono text-[#9A9A95] uppercase tracking-wider mb-4">
-                Top Languages
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {(student.languages as { name: string; bytes: number }[]).slice(0, 5).map((lang) => (
-                  <div key={lang.name} className="flex items-center gap-1.5 bg-[#F6F5F1] border border-black/10 px-2.5 py-1 rounded-md">
-                    <div className="w-2 h-2 rounded-full bg-[#0F52BA]" />
-                    <span className="text-xs font-medium text-[#0E0E0C]">{lang.name}</span>
+          {/* Right Column: Score Breakdown */}
+          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <div className="bg-[#0E0E0C] text-white rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.15)] relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#0F52BA]/20 rounded-full filter blur-[80px] pointer-events-none" />
+              
+              <h3 className="font-serif text-xl font-bold mb-6 tracking-tight relative z-10">Score Breakdown</h3>
+              
+              <div className="space-y-6 relative z-10">
+                {dimensions.map((dim) => (
+                  <div key={dim.label}>
+                    <div className="flex items-baseline justify-between mb-2">
+                      <span className="text-sm font-medium text-white/90">{dim.label}</span>
+                      <span className="text-xs text-white/50 font-mono tracking-wider">
+                        {isScored ? `${dim.score}/100` : "--"}
+                      </span>
+                    </div>
+                    <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-1000 ease-out ${getScoreColor(dim.score)}`}
+                        style={{ width: isScored ? `${dim.score}%` : "0%" }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-          )}
+          </div>
 
-          {/* Top Repositories */}
-          {student.top_repos && student.top_repos.length > 0 && (
-            <div className="border-t border-black/6 pt-6 mt-6">
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-mono text-[#9A9A95] uppercase tracking-wider">
-                  Top Repositories
-                </p>
-                <a href={student.github_url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#0F52BA] hover:underline">
-                  View all GitHub →
-                </a>
-              </div>
-              <div className="grid grid-cols-1 gap-3">
-                {(student.top_repos as { name: string; description: string; url: string; stars: number; language: string }[]).map((repo) => (
-                  <a
-                    key={repo.name}
-                    href={repo.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block p-4 border border-black/10 rounded-xl hover:border-black/20 hover:shadow-sm transition-all"
-                  >
-                    <div className="flex items-start justify-between mb-1">
-                      <p className="text-sm font-semibold text-[#0E0E0C] group-hover:text-[#0F52BA] transition-colors">{repo.name}</p>
-                      {repo.stars > 0 && (
-                        <div className="flex items-center gap-1 text-xs text-[#6A6A66]">
-                          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" />
-                          </svg>
-                          <span>{repo.stars}</span>
-                        </div>
-                      )}
-                    </div>
-                    {repo.description && (
-                      <p className="text-xs text-[#6A6A66] mb-3 line-clamp-2">{repo.description}</p>
-                    )}
-                    {repo.language && (
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-[#0E0E0C]" />
-                        <span className="text-[10px] uppercase font-mono text-[#9A9A95]">{repo.language}</span>
-                      </div>
-                    )}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
-
-        <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm">
-          <p className="text-xs font-mono text-[#9A9A95] uppercase tracking-wider mb-4">
-            Verq Score Breakdown
-          </p>
-          {dimensions.map((dim) => (
-            <div key={dim.label} className="flex items-center gap-3 mb-3">
-              <span className="text-sm text-[#6A6A66] w-40">{dim.label}</span>
-              <div className="flex-1 h-1.5 bg-[#E2E1DC] rounded-full overflow-hidden">
-                <div
-                  className={`h-1.5 rounded-full transition-all duration-500 ${getScoreColor(dim.score)}`}
-                  style={{ width: isScored ? `${dim.score}%` : "0%" }}
-                />
-              </div>
-              <span className="text-xs font-mono text-[#9A9A95] w-8 text-right">
-                {isScored ? dim.score : "--"}
-              </span>
-            </div>
-          ))}
-          {isScored && student.scored_at && (
-            <p className="text-xs text-[#9A9A95] mt-4">
-              Last scored {new Date(student.scored_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-            </p>
-          )}
-          {!isScored && (
-            <p className="text-xs text-[#9A9A95] mt-4">
-              Score will appear after GitHub verification is complete.
-            </p>
-          )}
-        </div>
-
       </div>
     </main>
   )

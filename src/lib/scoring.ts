@@ -1,0 +1,257 @@
+import { GitHubRepo, RepoDetails } from "./github";
+
+export interface ScoreBreakdown {
+  code_quality: number;
+  project_complexity: number;
+  commit_consistency: number;
+  documentation: number;
+  deployment: number;
+  overall: number;
+}
+
+const WEIGHTS = {
+  code_quality: 0.2,
+  project_complexity: 0.25,
+  commit_consistency: 0.25,
+  documentation: 0.15,
+  deployment: 0.15,
+};
+
+function clamp(value: number, min = 0, max = 100): number {
+  return Math.round(Math.max(min, Math.min(max, value)));
+}
+
+/**
+ * Code Quality — measures language diversity, repo sizes, and community validation (stars)
+ */
+function scoreCodeQuality(
+  repos: GitHubRepo[],
+  repoDetails: RepoDetails[]
+): number {
+  if (repos.length === 0) return 0;
+
+  // Language diversity: how many unique languages across all repos
+  const allLanguages = new Set<string>();
+  for (const detail of repoDetails) {
+    for (const lang of Object.keys(detail.languages)) {
+      allLanguages.add(lang);
+    }
+  }
+  // 1 lang = 10, 3 = 30, 5+ = 50 (max 50 pts for diversity)
+  const langScore = Math.min(allLanguages.size * 10, 50);
+
+  // Stars: social validation of code quality
+  const totalStars = repos.reduce((s, r) => s + r.stargazers_count, 0);
+  // 0 stars = 0, 5 = 15, 10+ = 25 (max 25 pts)
+  const starScore = Math.min(totalStars * 5, 25);
+
+  // Repo size: non-trivial projects (avg size > 100KB is solid)
+  const avgSize = repos.reduce((s, r) => s + r.size, 0) / repos.length;
+  // Scale: 0-50KB = 5, 50-200KB = 15, 200KB+ = 25 (max 25 pts)
+  const sizeScore =
+    avgSize > 200 ? 25 : avgSize > 50 ? 15 : avgSize > 10 ? 5 : 0;
+
+  return clamp(langScore + starScore + sizeScore);
+}
+
+/**
+ * Project Complexity — measures depth and breadth of projects
+ */
+function scoreProjectComplexity(
+  repos: GitHubRepo[],
+  repoDetails: RepoDetails[]
+): number {
+  if (repos.length === 0) return 0;
+
+  // Number of non-fork repos (having multiple projects shows builder mentality)
+  // 1 repo = 10, 3 = 25, 5 = 35, 10+ = 45 (max 45 pts)
+  const repoCountScore =
+    repos.length >= 10
+      ? 45
+      : repos.length >= 5
+        ? 35
+        : repos.length >= 3
+          ? 25
+          : 10;
+
+  // Per-repo language count (multi-language repos are more complex)
+  const avgLangsPerRepo =
+    repoDetails.reduce((s, d) => s + Object.keys(d.languages).length, 0) /
+    repoDetails.length;
+  // 1 lang = 5, 2 = 15, 3+ = 30 (max 30 pts)
+  const langComplexity =
+    avgLangsPerRepo >= 3 ? 30 : avgLangsPerRepo >= 2 ? 15 : 5;
+
+  // Forks received (others forking your project = complex and useful)
+  const totalForks = repos.reduce((s, r) => s + r.forks_count, 0);
+  // 0 = 0, 2 = 10, 5+ = 25 (max 25 pts)
+  const forkScore = Math.min(totalForks * 5, 25);
+
+  return clamp(repoCountScore + langComplexity + forkScore);
+}
+
+/**
+ * Commit Consistency — measures regular coding activity over the past 90 days
+ */
+function scoreCommitConsistency(repoDetails: RepoDetails[]): number {
+  // Gather all commits across repos from last 90 days
+  const allCommits = repoDetails.flatMap((d) => d.recentCommits);
+  const totalCommits = allCommits.length;
+
+  if (totalCommits === 0) return 0;
+
+  // Total commit volume: 10 = 15, 30 = 35, 60+ = 50 (max 50 pts)
+  const volumeScore =
+    totalCommits >= 60
+      ? 50
+      : totalCommits >= 30
+        ? 35
+        : totalCommits >= 10
+          ? 15
+          : 5;
+
+  // Weekly spread: how many distinct weeks had commits (out of ~13 weeks in 90 days)
+  const weeks = new Set<string>();
+  for (const commit of allCommits) {
+    const date = new Date(commit.commit.author.date);
+    const weekKey = `${date.getFullYear()}-W${getWeekNumber(date)}`;
+    weeks.add(weekKey);
+  }
+  // Spread across weeks: 1 week = 5, 4 = 15, 8 = 30, 12+ = 50 (max 50 pts)
+  const spreadScore =
+    weeks.size >= 12
+      ? 50
+      : weeks.size >= 8
+        ? 30
+        : weeks.size >= 4
+          ? 15
+          : 5;
+
+  return clamp((volumeScore + spreadScore));
+}
+
+/**
+ * Documentation — measures README presence and quality
+ */
+function scoreDocumentation(repoDetails: RepoDetails[]): number {
+  if (repoDetails.length === 0) return 0;
+
+  // % of repos with a README
+  const withReadme = repoDetails.filter((d) => d.hasReadme).length;
+  const readmeRatio = withReadme / repoDetails.length;
+  // 0% = 0, 50% = 25, 80% = 45, 100% = 60 (max 60 pts)
+  const presenceScore =
+    readmeRatio >= 1
+      ? 60
+      : readmeRatio >= 0.8
+        ? 45
+        : readmeRatio >= 0.5
+          ? 25
+          : readmeRatio > 0
+            ? 10
+            : 0;
+
+  // Average README length (in bytes) — longer = more detailed
+  const readmeLengths = repoDetails
+    .filter((d) => d.hasReadme)
+    .map((d) => d.readmeLength);
+  const avgReadmeLength =
+    readmeLengths.length > 0
+      ? readmeLengths.reduce((s, l) => s + l, 0) / readmeLengths.length
+      : 0;
+  // < 200 bytes = 5, 200-1000 = 15, 1000-3000 = 25, 3000+ = 40 (max 40 pts)
+  const qualityScore =
+    avgReadmeLength >= 3000
+      ? 40
+      : avgReadmeLength >= 1000
+        ? 25
+        : avgReadmeLength >= 200
+          ? 15
+          : avgReadmeLength > 0
+            ? 5
+            : 0;
+
+  return clamp(presenceScore + qualityScore);
+}
+
+/**
+ * Deployment — measures if projects are actually shipped/deployed
+ */
+function scoreDeployment(
+  repos: GitHubRepo[],
+  repoDetails: RepoDetails[]
+): number {
+  if (repos.length === 0) return 0;
+
+  // Repos with deployment config files
+  const withDeploy = repoDetails.filter(
+    (d) => d.deploymentFiles.length > 0
+  ).length;
+  const deployRatio = withDeploy / repoDetails.length;
+  // 0% = 0, 20% = 20, 40% = 35, 60%+ = 50 (max 50 pts)
+  const configScore =
+    deployRatio >= 0.6
+      ? 50
+      : deployRatio >= 0.4
+        ? 35
+        : deployRatio >= 0.2
+          ? 20
+          : deployRatio > 0
+            ? 10
+            : 0;
+
+  // Repos with homepage URL set (published somewhere)
+  const withHomepage = repos.filter(
+    (r) => r.homepage && r.homepage.trim() !== ""
+  ).length;
+  const homepageRatio = withHomepage / repos.length;
+  // max 25 pts
+  const homepageScore = Math.min(Math.round(homepageRatio * 50), 25);
+
+  // GitHub Pages enabled
+  const withPages = repos.filter((r) => r.has_pages).length;
+  const pagesRatio = withPages / repos.length;
+  // max 25 pts
+  const pagesScore = Math.min(Math.round(pagesRatio * 50), 25);
+
+  return clamp(configScore + homepageScore + pagesScore);
+}
+
+function getWeekNumber(d: Date): number {
+  const start = new Date(d.getFullYear(), 0, 1);
+  const diff = d.getTime() - start.getTime();
+  return Math.ceil((diff / 86400000 + start.getDay() + 1) / 7);
+}
+
+/**
+ * Main scoring function — takes repos + details and returns the full breakdown
+ */
+export function calculateScores(
+  repos: GitHubRepo[],
+  repoDetails: RepoDetails[]
+): ScoreBreakdown {
+  const code_quality = scoreCodeQuality(repos, repoDetails);
+  const project_complexity = scoreProjectComplexity(repos, repoDetails);
+  const commit_consistency = scoreCommitConsistency(repoDetails);
+  const documentation = scoreDocumentation(repoDetails);
+  const deployment = scoreDeployment(repos, repoDetails);
+
+  const overall = clamp(
+    Math.round(
+      code_quality * WEIGHTS.code_quality +
+        project_complexity * WEIGHTS.project_complexity +
+        commit_consistency * WEIGHTS.commit_consistency +
+        documentation * WEIGHTS.documentation +
+        deployment * WEIGHTS.deployment
+    )
+  );
+
+  return {
+    code_quality,
+    project_complexity,
+    commit_consistency,
+    documentation,
+    deployment,
+    overall,
+  };
+}

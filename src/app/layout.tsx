@@ -13,8 +13,34 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Verq — Verified by work, not words.",
-  description: "India's first verified builder platform. Build real projects, get verified, get discovered.",
+  title: {
+    default: "Verq — Verified by work, not words.",
+    template: "%s | Verq",
+  },
+  description:
+    "India's first verified builder platform. Build real projects, get verified by AI, get discovered by companies.",
+  keywords: [
+    "developer platform",
+    "github score",
+    "verified builders",
+    "student developers",
+    "tech hiring",
+    "India",
+  ],
+  openGraph: {
+    title: "Verq — Verified by work, not words.",
+    description:
+      "Build real projects. Get verified by AI. Let companies discover you.",
+    type: "website",
+    url: "https://verq-two.vercel.app",
+    siteName: "Verq",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Verq — Verified by work, not words.",
+    description:
+      "India's first verified builder platform for student developers.",
+  },
 };
 
 export default function RootLayout({

@@ -5,15 +5,11 @@ import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
-export default function SignupPage() {
-  const [name, setName] = useState("")
+export default function SigninPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [githubUrl, setGithubUrl] = useState("")
   const [loading, setLoading] = useState(false)
-  const [scoring, setScoring] = useState(false)
   const [message, setMessage] = useState("")
-  const [messageType, setMessageType] = useState<"success" | "error">("success")
   const router = useRouter()
 
   async function handleGithubLogin() {
@@ -26,64 +22,23 @@ export default function SignupPage() {
     })
   }
 
-  async function handleSignup() {
+  async function handleSignin() {
     setLoading(true)
     setMessage("")
 
     const supabase = createClient()
-
-    const { error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
-      options: {
-        data: { name }
-      }
     })
 
     if (error) {
       setMessage(error.message)
-      setMessageType("error")
       setLoading(false)
       return
     }
 
-    await supabase.from("students").insert({
-      name,
-      email,
-      github_url: githubUrl
-    })
-
-    setLoading(false)
-    setMessage("Account created! Analyzing your GitHub...")
-    setMessageType("success")
-
-    // Trigger scoring in the background
-    if (githubUrl) {
-      setScoring(true)
-      try {
-        const res = await fetch("/api/score", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ github_url: githubUrl }),
-        })
-        const data = await res.json()
-        if (data.scores) {
-          setMessage(
-            `Your Verq score: ${data.scores.overall}/100 🎉 Redirecting...`
-          )
-          setTimeout(() => router.push("/dashboard"), 1500)
-        } else {
-          setMessage("Account created! Redirecting...")
-          setTimeout(() => router.push("/dashboard"), 1000)
-        }
-      } catch {
-        setTimeout(() => router.push("/dashboard"), 1000)
-      } finally {
-        setScoring(false)
-      }
-    } else {
-      setTimeout(() => router.push("/dashboard"), 1000)
-    }
+    router.push("/dashboard")
   }
 
   return (
@@ -101,13 +56,13 @@ export default function SignupPage() {
         </Link>
 
         <h1 className="font-serif text-3xl text-[#0E0E0C] mb-2">
-          Create your account
+          Welcome back
         </h1>
         <p className="text-sm text-[#6A6A66] mb-8">
-          Use your college email to verify your enrollment.
+          Sign in to view your Verq score and profile.
         </p>
 
-        <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm relative">
+        <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm">
 
           <button
             onClick={handleGithubLogin}
@@ -121,96 +76,63 @@ export default function SignupPage() {
 
           <div className="flex items-center gap-3 mb-6">
             <div className="h-px bg-black/10 flex-1"></div>
-            <span className="text-xs text-[#9A9A95] uppercase font-mono tracking-wider">or sign up with email</span>
+            <span className="text-xs text-[#9A9A95] uppercase font-mono tracking-wider">or sign in with email</span>
             <div className="h-px bg-black/10 flex-1"></div>
           </div>
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">
-              Full name
-            </label>
-            <input
-              type="text"
-              placeholder="Aditya Yadav"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0F52BA] transition-colors"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">
-              College email
+              Email
             </label>
             <input
               type="email"
               placeholder="you@iitd.ac.in"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSignin()}
               className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0F52BA] transition-colors"
             />
-            <p className="text-xs text-[#9A9A95] mt-1.5">
-              Must be a .ac.in, .edu, or recognised college email
-            </p>
           </div>
 
-          <div className="mb-4">
+          <div className="mb-2">
             <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">
               Password
             </label>
             <input
               type="password"
-              placeholder="Min. 8 characters"
+              placeholder="Your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSignin()}
               className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0F52BA] transition-colors"
             />
           </div>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">
-              GitHub profile URL
-            </label>
-            <input
-              type="url"
-              placeholder="https://github.com/yourusername"
-              value={githubUrl}
-              onChange={(e) => setGithubUrl(e.target.value)}
-              className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0F52BA] transition-colors"
-            />
-            <p className="text-xs text-[#9A9A95] mt-1.5">
-              This is what Verq scores — make sure it is your real GitHub.
-            </p>
+          <div className="mb-6 text-right">
+            <Link href="/forgot-password" className="text-xs text-[#0F52BA] hover:underline">
+              Forgot password?
+            </Link>
           </div>
 
           {message && (
-            <div className={`mb-4 p-3 rounded-lg text-sm ${
-              messageType === "error"
-                ? "bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626]"
-                : "bg-[#E4F4EE] border border-[#9FE1CB] text-[#085041]"
-            }`}>
+            <div className="mb-4 p-3 bg-[#FEF2F2] border border-[#FECACA] rounded-lg text-sm text-[#DC2626]">
               {message}
             </div>
           )}
 
           <button
-            onClick={handleSignup}
-            disabled={loading || scoring}
+            onClick={handleSignin}
+            disabled={loading}
             className="w-full bg-[#0F52BA] text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-[#0a45a0] transition-colors disabled:opacity-50"
           >
-            {loading
-              ? "Creating account..."
-              : scoring
-                ? "Analyzing your GitHub..."
-                : "Create account"}
+            {loading ? "Signing in..." : "Sign in"}
           </button>
 
         </div>
 
         <p className="text-center text-sm text-[#6A6A66] mt-4">
-          Already have an account?{" "}
-          <Link href="/signin" className="text-[#0F52BA] font-medium hover:underline">
-            Sign in
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="text-[#0F52BA] font-medium hover:underline">
+            Sign up
           </Link>
         </p>
 

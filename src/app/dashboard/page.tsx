@@ -104,7 +104,7 @@ export default async function DashboardPage() {
         </nav>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-32">
 
         <div className="mb-10 animate-fade-in">
           <h1 className="font-serif text-4xl sm:text-5xl text-[#0E0E0C] font-bold mb-2 tracking-tight">
@@ -128,8 +128,8 @@ export default async function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* Left Column: Main Score Card */}
-            <div className="lg:col-span-2 space-y-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            {/* Main Column: Profile, Actions, Best Work, Action Plan */}
+            <div className="lg:col-span-2 space-y-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
                 <div className="flex flex-col sm:flex-row items-start justify-between gap-8 mb-8 relative z-10">
                   <div className="flex items-center gap-5">
@@ -177,17 +177,14 @@ export default async function DashboardPage() {
               </div>
 
               {/* Actions Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <RescoreButton githubUrl={student.github_url} />
                 {student.name && (
                   <Link
                     href={`/s/${encodeURIComponent(student.name)}`}
-                    className="flex justify-center items-center gap-2 bg-white border border-black/5 shadow-[0_4px_14px_rgb(0,0,0,0.03)] text-[#0E0E0C] text-sm font-semibold py-3.5 rounded-2xl hover:shadow-[0_6px_20px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all"
+                    className="flex justify-center items-center gap-2 bg-white border border-black/5 shadow-[0_4px_14px_rgb(0,0,0,0.03)] text-[#0E0E0C] text-sm font-semibold py-3.5 rounded-2xl hover:shadow-[0_6px_20px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all text-center"
                   >
-                    View public profile
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" className="opacity-50">
-                      <path fillRule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                    </svg>
+                    View profile
                   </Link>
                 )}
                 <Link
@@ -206,100 +203,90 @@ export default async function DashboardPage() {
                   <ShareModal student={student} topLanguage={topLanguage} />
                 )}
               </div>
-            </div>
 
-              {student.languages && (student.languages as any[]).length > 0 && (
-                <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                  <h3 className="font-serif text-xl font-bold text-[#0E0E0C] mb-5 tracking-tight">Languages</h3>
-                  <div className="flex flex-wrap gap-2.5">
-                    {(student.languages as { name: string; bytes: number }[]).slice(0, 5).map((lang) => (
-                      <div key={lang.name} className="flex items-center gap-2 bg-[#FAFAFA] border border-black/5 px-3 py-1.5 rounded-full hover:bg-white hover:shadow-sm hover:-translate-y-0.5 transition-all">
-                        <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] shadow-sm" />
-                        <span className="text-sm font-medium text-[#0E0E0C]">{lang.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {student.top_repos && (student.top_repos as any[]).length > 0 && (
-                <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-serif text-xl font-bold text-[#0E0E0C] tracking-tight">Best Work</h3>
-                    <a href={student.github_url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#0F52BA] hover:underline">
-                      View GitHub →
-                    </a>
-                  </div>
-                  <div className="grid grid-cols-1 gap-4">
-                    {(student.top_repos as { name: string; description: string; url: string; stars: number; language: string }[]).map((repo) => (
-                      <a
-                        key={repo.name}
-                        href={repo.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block p-5 bg-[#FAFAFA] border border-black/5 rounded-2xl hover:bg-white hover:border-black/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all group"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <p className="text-base font-bold text-[#0E0E0C] group-hover:text-[#0F52BA] transition-colors">{repo.name}</p>
-                          {repo.stars > 0 && (
-                            <div className="flex items-center gap-1.5 bg-white border border-black/5 px-2 py-0.5 rounded-md text-xs font-medium text-[#6A6A66] shadow-sm">
-                              <span className="text-[#D97706]">★</span>
-                              <span>{repo.stars}</span>
+              {/* Middle Section: Best Work & Action Plan side-by-side */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                {student.top_repos && (student.top_repos as any[]).length > 0 && (
+                  <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="font-serif text-xl font-bold text-[#0E0E0C] tracking-tight">Best Work</h3>
+                      <a href={student.github_url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#0F52BA] hover:underline">
+                        GitHub →
+                      </a>
+                    </div>
+                    <div className="space-y-4">
+                      {(student.top_repos as { name: string; description: string; url: string; stars: number; language: string }[]).map((repo) => (
+                        <a
+                          key={repo.name}
+                          href={repo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block p-5 bg-[#FAFAFA] border border-black/5 rounded-2xl hover:bg-white hover:border-black/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all group"
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <p className="text-base font-bold text-[#0E0E0C] group-hover:text-[#0F52BA] transition-colors line-clamp-1">{repo.name}</p>
+                            {repo.stars > 0 && (
+                              <div className="flex items-center gap-1.5 bg-white border border-black/5 px-2 py-0.5 rounded-md text-xs font-medium text-[#6A6A66] shadow-sm">
+                                <span className="text-[#D97706]">★</span>
+                                <span>{repo.stars}</span>
+                              </div>
+                            )}
+                          </div>
+                          {repo.description && (
+                            <p className="text-xs text-[#6A6A66] mb-4 line-clamp-2 leading-relaxed">{repo.description}</p>
+                          )}
+                          {repo.language && (
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-2 h-2 rounded-full bg-[#0E0E0C]" />
+                              <span className="text-[10px] font-mono font-medium text-[#9A9A95]">{repo.language}</span>
                             </div>
                           )}
-                        </div>
-                        {repo.description && (
-                          <p className="text-sm text-[#6A6A66] mb-4 line-clamp-2 leading-relaxed">{repo.description}</p>
-                        )}
-                        {repo.language && (
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-[#0E0E0C]" />
-                            <span className="text-xs font-mono font-medium text-[#9A9A95]">{repo.language}</span>
-                          </div>
-                        )}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="bg-white border text-left border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden group/recs">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-[#0F52BA]/5 to-transparent rounded-bl-full pointer-events-none" />
-                
-                <div className="flex items-center gap-3 mb-6 relative z-10">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] flex items-center justify-center shadow-inner">
-                    <span className="text-white text-lg">💡</span>
-                  </div>
-                  <div>
-                    <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0E0E0C] tracking-tight">Action Plan to 100</h3>
-                    <p className="text-[#6A6A66] text-sm mt-0.5">Specific, actionable steps to instantly boost your Verq score.</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4 relative z-10">
-                  {student.recommended_projects && (student.recommended_projects as any[]).length > 0 ? (
-                    (student.recommended_projects as { title: string; description: string }[]).map((proj, idx) => (
-                      <div key={idx} className="bg-[#FAFAFA] border border-black/5 rounded-2xl p-5 hover:bg-white hover:border-black/10 hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] transition-all flex gap-4">
-                        <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-[#0F52BA] font-bold text-sm shrink-0 border border-black/5 mt-0.5">
-                          {idx + 1}
-                        </div>
-                        <div>
-                          <h4 className="font-serif text-lg font-bold text-[#0E0E0C] mb-1.5">{proj.title}</h4>
-                          <p className="text-sm text-[#555] leading-relaxed">{proj.description}</p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="bg-[#FAFAFA] border border-black/5 rounded-2xl p-6 text-center">
-                      <p className="text-[#6A6A66] mb-4 text-sm">Your tactical coaching plan has not been generated yet.</p>
-                      <GenerateActionPlanButton githubUrl={student?.github_url} />
+                        </a>
+                      ))}
                     </div>
-                  )}
+                  </div>
+                )}
+
+                <div className="bg-white border text-left border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden group/recs h-full">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#0F52BA]/5 to-transparent rounded-bl-full pointer-events-none" />
+                  
+                  <div className="flex items-center gap-3 mb-6 relative z-10">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] flex items-center justify-center shadow-inner">
+                      <span className="text-white text-lg">💡</span>
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-xl font-bold text-[#0E0E0C] tracking-tight">Action Plan</h3>
+                      <p className="text-[#6A6A66] text-xs mt-0.5">Tactical steps to boost score.</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 relative z-10">
+                    {student.recommended_projects && (student.recommended_projects as any[]).length > 0 ? (
+                      (student.recommended_projects as { title: string; description: string }[]).slice(0, 3).map((proj, idx) => (
+                        <div key={idx} className="bg-[#FAFAFA] border border-black/5 rounded-2xl p-4 hover:bg-white hover:border-black/10 transition-all flex gap-3">
+                          <div className="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-[#0F52BA] font-bold text-[10px] shrink-0 border border-black/5 mt-0.5">
+                            {idx + 1}
+                          </div>
+                          <div>
+                            <h4 className="font-serif text-sm font-bold text-[#0E0E0C] mb-1">{proj.title}</h4>
+                            <p className="text-xs text-[#6A6A66] leading-relaxed line-clamp-2">{proj.description}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="bg-[#FAFAFA] border border-black/5 rounded-2xl p-6 text-center">
+                        <p className="text-[#6A6A66] mb-4 text-xs">No tactical plan yet.</p>
+                        <GenerateActionPlanButton githubUrl={student?.github_url} />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            {/* Right Column: Dark Mode Score Breakdown */}
-            <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <div className="bg-[#0E0E0C] text-white rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.15)] relative overflow-hidden h-full">
+            </div>
+
+            {/* Sidebar Column: Score Breakdown & Languages */}
+            <div className="space-y-8 lg:col-span-1">
+              <div className="bg-[#0E0E0C] text-white rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.15)] relative overflow-hidden h-full min-h-[400px]">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#0F52BA]/20 rounded-full filter blur-[80px] pointer-events-none" />
                 
                 <h3 className="font-serif text-xl font-bold mb-8 tracking-tight relative z-10">Score Breakdown</h3>
@@ -331,6 +318,20 @@ export default async function DashboardPage() {
                   </div>
                 )}
               </div>
+
+              {student.languages && (student.languages as any[]).length > 0 && (
+                <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                  <h3 className="font-serif text-xl font-bold text-[#0E0E0C] mb-5 tracking-tight">Languages</h3>
+                  <div className="flex flex-wrap gap-2.5">
+                    {(student.languages as { name: string; bytes: number }[]).slice(0, 5).map((lang) => (
+                      <div key={lang.name} className="flex items-center gap-2 bg-[#FAFAFA] border border-black/5 px-3 py-1.5 rounded-full hover:bg-white hover:shadow-sm hover:-translate-y-0.5 transition-all">
+                        <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] shadow-sm" />
+                        <span className="text-sm font-medium text-[#0E0E0C]">{lang.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>

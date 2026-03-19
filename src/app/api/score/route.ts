@@ -60,8 +60,8 @@ export async function POST(request: NextRequest) {
       topRepos.map((repo) => fetchRepoDetails(repo.full_name))
     );
 
-    // 3. Calculate scores
-    const scores = calculateScores(topRepos, repoDetails);
+    // 3. Calculate scores via AI
+    const scores = await calculateScores(topRepos, repoDetails);
 
     // 4. Extract rich insights (Top Languages & Top Repos)
     const languageBytes: Record<string, number> = {};
@@ -104,7 +104,8 @@ export async function POST(request: NextRequest) {
         score_deployment: scores.deployment,
         scored_at: new Date().toISOString(),
         top_repos,
-        languages
+        languages,
+        recommended_projects: scores.recommended_projects || []
       })
       .eq("email", user.email);
 

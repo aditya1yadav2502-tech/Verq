@@ -52,6 +52,29 @@ export default async function StudentProfile({ params }: PageProps) {
   }
 
   const isScored = student.verq_score !== null && student.verq_score !== undefined
+  
+  // Fetch global rank
+  let rank: number | null = null;
+  let percentile: number | null = null;
+  let totalScored = 0;
+
+  if (isScored) {
+    const { count: total } = await supabase
+      .from("students")
+      .select("*", { count: "exact", head: true })
+      .not("verq_score", "is", null);
+
+    const { count: higher } = await supabase
+      .from("students")
+      .select("*", { count: "exact", head: true })
+      .gt("verq_score", student.verq_score);
+
+    if (total !== null && higher !== null) {
+      totalScored = total;
+      rank = higher + 1;
+      percentile = Math.max(1, Math.ceil((rank / total) * 100));
+    }
+  }
 
   const dimensions = [
     { label: "Code quality", score: student.score_code_quality },
@@ -115,11 +138,18 @@ export default async function StudentProfile({ params }: PageProps) {
               </div>
               <div className="text-xs text-[#9A9A95] font-mono tracking-widest uppercase mb-3">Verq Score</div>
               {isScored ? (
-                <div className="text-xs bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250] py-1 px-3 rounded-full font-mono inline-block shadow-sm">
-                  Verified ✓
+                <div className="flex flex-col items-center md:items-end gap-2 mt-2">
+                  <div className="text-xs bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250] py-1 px-3 rounded-full font-mono shadow-sm">
+                    Verified ✓
+                  </div>
+                  {rank && (
+                    <div className="text-xs bg-[#F0F5FF] border border-[#BFD4FF] text-[#0F52BA] py-1 px-3 rounded-full font-mono shadow-sm" title={`Ranked #${rank} out of ${totalScored}`}>
+                      Top {percentile}%
+                    </div>
+                  )}
                 </div>
               ) : (
-                <div className="text-xs bg-[#FEF3C7] border border-[#FDE68A] text-[#D97706] py-1 px-3 rounded-full font-mono inline-block shadow-sm">
+                <div className="text-xs bg-[#FEF3C7] border border-[#FDE68A] text-[#D97706] py-1 px-3 rounded-full font-mono inline-block shadow-sm mt-3">
                   Pending
                 </div>
               )}

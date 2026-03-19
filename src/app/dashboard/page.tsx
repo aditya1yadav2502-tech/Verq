@@ -25,6 +25,29 @@ export default async function DashboardPage() {
     .single()
 
   const isScored = student?.verq_score !== null && student?.verq_score !== undefined
+  
+  // Fetch global rank
+  let rank: number | null = null;
+  let percentile: number | null = null;
+  let totalScored = 0;
+
+  if (isScored) {
+    const { count: total } = await supabase
+      .from("students")
+      .select("*", { count: "exact", head: true })
+      .not("verq_score", "is", null);
+
+    const { count: higher } = await supabase
+      .from("students")
+      .select("*", { count: "exact", head: true })
+      .gt("verq_score", student.verq_score);
+
+    if (total !== null && higher !== null) {
+      totalScored = total;
+      rank = higher + 1;
+      percentile = Math.max(1, Math.ceil((rank / total) * 100));
+    }
+  }
 
   const dimensions = [
     { label: "Code quality", score: student?.score_code_quality },
@@ -142,11 +165,18 @@ export default async function DashboardPage() {
                       {isScored ? student.verq_score : "--"}
                     </div>
                     {isScored ? (
-                      <div className="text-xs bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250] py-1 px-3 rounded-full font-mono inline-block shadow-sm">
-                        Grade {getGrade(student.verq_score)}
+                      <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end gap-2 mt-2">
+                        <div className="text-xs bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250] py-1 px-3 rounded-full font-mono shadow-sm">
+                          Grade {getGrade(student.verq_score)}
+                        </div>
+                        {rank && (
+                          <div className="text-xs bg-[#F0F5FF] border border-[#BFD4FF] text-[#0F52BA] py-1 px-3 rounded-full font-mono shadow-sm" title={`Ranked #${rank} out of ${totalScored}`}>
+                            Top {percentile}%
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <div className="text-xs bg-[#FEF3C7] border border-[#FDE68A] text-[#D97706] py-1 px-3 rounded-full font-mono inline-block shadow-sm">
+                      <div className="text-xs bg-[#FEF3C7] border border-[#FDE68A] text-[#D97706] py-1 px-3 rounded-full font-mono inline-block shadow-sm mt-3">
                         Pending
                       </div>
                     )}
@@ -241,6 +271,36 @@ export default async function DashboardPage() {
                           </div>
                         )}
                       </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {student.recommended_projects && (student.recommended_projects as any[]).length > 0 && (
+                <div className="bg-white border text-left border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden group/recs">
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-[#0F52BA]/5 to-transparent rounded-bl-full pointer-events-none" />
+                  
+                  <div className="flex items-center gap-3 mb-6 relative z-10">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] flex items-center justify-center shadow-inner">
+                      <span className="text-white text-lg">💡</span>
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0E0E0C] tracking-tight">What to build next</h3>
+                      <p className="text-[#6A6A66] text-sm mt-0.5">AI recommendations to improve your score</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 relative z-10">
+                    {(student.recommended_projects as { title: string; description: string }[]).map((proj, idx) => (
+                      <div key={idx} className="bg-[#FAFAFA] border border-black/5 rounded-2xl p-5 hover:bg-white hover:border-black/10 hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] transition-all flex gap-4">
+                        <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-[#0F52BA] font-bold text-sm shrink-0 border border-black/5 mt-0.5">
+                          {idx + 1}
+                        </div>
+                        <div>
+                          <h4 className="font-serif text-lg font-bold text-[#0E0E0C] mb-1.5">{proj.title}</h4>
+                          <p className="text-sm text-[#555] leading-relaxed">{proj.description}</p>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>

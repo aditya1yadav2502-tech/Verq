@@ -1,4 +1,5 @@
 import { GitHubRepo, RepoDetails } from "./github";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export interface ScoreBreakdown {
   code_quality: number;
@@ -7,6 +8,7 @@ export interface ScoreBreakdown {
   documentation: number;
   deployment: number;
   overall: number;
+  recommended_projects?: { title: string; description: string }[];
 }
 
 const WEIGHTS = {
@@ -224,9 +226,9 @@ function getWeekNumber(d: Date): number {
 }
 
 /**
- * Main scoring function — takes repos + details and returns the full breakdown
+ * Fallback heuristic scoring function (used if Gemini is missing or fails)
  */
-export function calculateScores(
+function calculateHeuristicScores(
   repos: GitHubRepo[],
   repoDetails: RepoDetails[]
 ): ScoreBreakdown {
@@ -253,5 +255,78 @@ export function calculateScores(
     documentation,
     deployment,
     overall,
+    recommended_projects: []
   };
+}
+
+/**
+ * Main AI scoring function — dynamically grades the profile using Gemini 1.5
+ */
+export async function calculateScores(
+  repos: GitHubRepo[],
+  repoDetails: RepoDetails[]
+): Promise<ScoreBreakdown> {
+  const heuristicScores = calculateHeuristicScores(repos, repoDetails);
+
+  if (!process.env.GEMINI_API_KEY) {
+    return heuristicScores;
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const profileSummary = repos.map((r, i) => {
+      const details = repoDetails[i];
+      return {
+        name: r.name,
+        description: r.description,
+        stars: r.stargazers_count,
+        language: r.language,
+        languages: details ? Object.keys(details.languages) : [],
+        hasReadme: details ? details.hasReadme : false,
+        readmeSize: details ? details.readmeLength : 0,
+        recentCommits: details ? details.recentCommits.length : 0,
+        deployments: details ? details.deploymentFiles.length : 0,
+      };
+    });
+
+    const prompt = `You are an elite, brutally strict senior engineering manager evaluating a candidate's GitHub profile. 
+Based on their repository data below, grade their skill level from 0 to 100 on five distinct axes according to these rules:
+- Code Quality: Reward diverse languages, architectural descriptions, and stars.
+- Project Complexity: Reward deep, multi-file projects over shallow forks.
+- AI Detection Penalty: If the repository data suggests heavy AI bootstrapping (very few, massive commits instead of natural iterative human workflows), severely penalize the overall score and code quality.
+- Commit Consistency: Reward high commit volume across recent weeks.
+- Documentation: Reward long, detailed READMEs.
+- Deployment: Reward repos with homepages and github pages.
+- Overall: Provide a realistic aggregate score.
+
+CRITICAL: You must also analyze their weakest areas (e.g. lack of documentation, no deployments, no complex projects) and generate exactly 3 highly specific, actionable project ideas that the candidate should build NEXT to improve their skills and raise their score. 
+
+Return ONLY a strictly valid JSON object exactly matching this interface (no markdown tags, no backticks):
+{"code_quality": number, "project_complexity": number, "commit_consistency": number, "documentation": number, "deployment": number, "overall": number, "recommended_projects": [{"title": "String", "description": "String (1-2 sentences explaining why this project helps their specific weak points)"}]}
+
+Data: ${JSON.stringify(profileSummary).substring(0, 8000)}`;
+
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: { responseMimeType: "application/json" },
+    });
+
+    const text = result.response.text();
+    const aiScores = JSON.parse(text) as ScoreBreakdown;
+    
+    return {
+      code_quality: clamp(aiScores.code_quality),
+      project_complexity: clamp(aiScores.project_complexity),
+      commit_consistency: clamp(aiScores.commit_consistency),
+      documentation: clamp(aiScores.documentation),
+      deployment: clamp(aiScores.deployment),
+      overall: clamp(aiScores.overall),
+      recommended_projects: aiScores.recommended_projects || [],
+    };
+  } catch (err) {
+    console.error("Gemini AI failed, falling back to heuristics:", err);
+    return heuristicScores;
+  }
 }

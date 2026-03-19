@@ -202,8 +202,8 @@ export default function SignupPage() {
 
           {message && !scoring && (
             <div className={`mt-6 p-4 rounded-xl text-sm font-medium shadow-sm ${messageType === "error"
-                ? "bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626]"
-                : "bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250]"
+              ? "bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626]"
+              : "bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250]"
               }`}>
               {message}
             </div>

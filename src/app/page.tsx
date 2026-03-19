@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar"
 import Link from "next/link"
+import PulseFeed from "@/components/PulseFeed"
 
 export default function Home() {
   return (
@@ -86,6 +87,13 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Live Market Pulse Section */}
+      <section className="px-6 py-12 bg-[#FAFAFA] relative z-10 -mt-12">
+        <div className="max-w-4xl mx-auto">
+          <PulseFeed />
+        </div>
+      </section>
+
       {/* Score dimensions */}
       <section className="px-6 py-24 bg-[#0E0E0C] text-white relative overflow-hidden">
         {/* Subtle dark glow */}
@@ -100,10 +108,6 @@ export default function Home() {
             <p className="text-[#9A9A95] text-lg leading-relaxed mb-8 max-w-md">
               Verq doesn&apos;t just count your stars. We look at code quality, architecture complexity, consistency, documentation habits, and how you deploy.
             </p>
-            <div className="inline-flex items-center gap-2 text-sm text-[#0F52BA] font-medium bg-[#0F52BA]/10 px-4 py-2.5 rounded-full border border-[#0F52BA]/30 hover:bg-[#0F52BA]/20 transition-colors">
-              <span className="w-2 h-2 rounded-full bg-[#0F52BA] animate-pulse"></span>
-              Live Dynamic Scoring
-            </div>
           </div>
 
           <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl p-8 shadow-2xl animate-float">
@@ -139,7 +143,7 @@ export default function Home() {
             Ready to get verified?
           </h2>
           <p className="text-lg text-[#6A6A66] mb-10 max-w-xl mx-auto">
-            Join hundreds of student builders who are getting discovered by companies through their work, not their resumes.
+            Join elite student builders who are getting discovered by companies through their work, not their resumes.
           </p>
           <Link
             href="/signup"

@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 import Navbar from "@/components/Navbar"
 import BookmarkButton from "@/components/BookmarkButton"
+import VerifiedBadge from "@/components/VerifiedBadge"
+import ShareModal from "@/components/ShareModal"
+import { getRelativeRanking } from "@/lib/scoring"
 
 interface PageProps {
   params: Promise<{ username: string }>
@@ -24,7 +27,7 @@ export default async function StudentProfile({ params }: PageProps) {
 
   const { data: student } = await supabase
     .from("students")
-    .select("name, email, college, github_url, verq_score, score_code_quality, score_project_complexity, score_commit_consistency, score_documentation, score_deployment, scored_at, top_repos, languages")
+    .select("name, email, college, github_url, verq_score, score_code_quality, score_project_complexity, score_commit_consistency, score_documentation, score_deployment, scored_at, top_repos, languages, all_repos")
     .ilike("name", name)
     .single()
 
@@ -52,29 +55,6 @@ export default async function StudentProfile({ params }: PageProps) {
   }
 
   const isScored = student.verq_score !== null && student.verq_score !== undefined
-  
-  // Fetch global rank
-  let rank: number | null = null;
-  let percentile: number | null = null;
-  let totalScored = 0;
-
-  if (isScored) {
-    const { count: total } = await supabase
-      .from("students")
-      .select("*", { count: "exact", head: true })
-      .not("verq_score", "is", null);
-
-    const { count: higher } = await supabase
-      .from("students")
-      .select("*", { count: "exact", head: true })
-      .gt("verq_score", student.verq_score);
-
-    if (total !== null && higher !== null) {
-      totalScored = total;
-      rank = higher + 1;
-      percentile = Math.max(1, Math.ceil((rank / total) * 100));
-    }
-  }
 
   const dimensions = [
     { label: "Code quality", score: student.score_code_quality },
@@ -83,6 +63,10 @@ export default async function StudentProfile({ params }: PageProps) {
     { label: "Documentation", score: student.score_documentation },
     { label: "Deployment", score: student.score_deployment },
   ]
+
+  const topLanguage = student.languages && (student.languages as any[]).length > 0
+    ? (student.languages as any[])[0].name
+    : undefined;
 
   function getScoreColor(score: number | null): string {
     if (score === null || score === undefined) return "bg-[#E2E1DC]"
@@ -117,8 +101,9 @@ export default async function StudentProfile({ params }: PageProps) {
                 </div>
               </div>
               <div>
-                <h1 className="font-serif text-3xl sm:text-4xl text-[#0E0E0C] font-bold mb-2 tracking-tight">
+                <h1 className="font-serif text-3xl sm:text-4xl text-[#0E0E0C] font-bold mb-2 tracking-tight flex items-center gap-3">
                   {student.name}
+                  {isScored && <VerifiedBadge className="w-8 h-8" />}
                 </h1>
                 <p className="text-[#6A6A66] flex items-center gap-2">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" className="opacity-70">
@@ -139,14 +124,9 @@ export default async function StudentProfile({ params }: PageProps) {
               <div className="text-xs text-[#9A9A95] font-mono tracking-widest uppercase mb-3">Verq Score</div>
               {isScored ? (
                 <div className="flex flex-col items-center md:items-end gap-2 mt-2">
-                  <div className="text-xs bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250] py-1 px-3 rounded-full font-mono shadow-sm">
-                    Verified ✓
+                  <div className="text-sm font-semibold text-[#0E0E0C]">
+                    {getRelativeRanking(student.verq_score, topLanguage)}
                   </div>
-                  {rank && (
-                    <div className="text-xs bg-[#F0F5FF] border border-[#BFD4FF] text-[#0F52BA] py-1 px-3 rounded-full font-mono shadow-sm" title={`Ranked #${rank} out of ${totalScored}`}>
-                      Top {percentile}%
-                    </div>
-                  )}
                 </div>
               ) : (
                 <div className="text-xs bg-[#FEF3C7] border border-[#FDE68A] text-[#D97706] py-1 px-3 rounded-full font-mono inline-block shadow-sm mt-3">
@@ -179,6 +159,12 @@ export default async function StudentProfile({ params }: PageProps) {
                 <p className="text-sm font-medium text-[#0E0E0C]">
                   {new Date(student.scored_at).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
                 </p>
+              </div>
+            )}
+            
+            {isScored && (
+              <div className="ml-auto flex items-center w-full sm:w-auto mt-4 sm:mt-0">
+                <ShareModal student={student} topLanguage={topLanguage} />
               </div>
             )}
           </div>
@@ -278,6 +264,66 @@ export default async function StudentProfile({ params }: PageProps) {
           </div>
 
         </div>
+
+        {/* Portfolio Section Full Width */}
+        {student.all_repos && (student.all_repos as any[]).length > 0 && (
+          <div className="mt-8 animate-slide-up" style={{ animationDelay: '0.3s' }}>
+            <div className="bg-white border text-left border-black/5 rounded-[2rem] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="font-serif text-2xl font-bold text-[#0E0E0C] tracking-tight">Full Portfolio</h3>
+                  <p className="text-[#6A6A66] text-sm mt-1">All {Math.min((student.all_repos as any[]).length, 30)} recent public repositories</p>
+                </div>
+                <a href={student.github_url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#0F52BA] hover:bg-[#F0F5FF] px-4 py-2 rounded-full border border-black/5 hover:border-[#BFD4FF] transition-all hidden sm:block">
+                  View GitHub →
+                </a>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(student.all_repos as any[]).map((repo, idx) => (
+                  <a
+                    key={idx}
+                    href={repo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col p-5 bg-[#FAFAFA] border border-black/5 rounded-2xl hover:bg-white hover:border-black/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all group"
+                  >
+                    <div className="flex items-start justify-between mb-2 gap-2">
+                      <p className="text-base font-bold text-[#0E0E0C] group-hover:text-[#0F52BA] transition-colors line-clamp-1 break-all">{repo.name}</p>
+                      {repo.stars > 0 && (
+                        <div className="flex items-center gap-1.5 bg-white border border-black/5 px-2 py-0.5 rounded-md text-xs font-medium text-[#6A6A66] shadow-sm shrink-0">
+                          <span className="text-[#D97706]">★</span>
+                          <span>{repo.stars}</span>
+                        </div>
+                      )}
+                    </div>
+                    {repo.description ? (
+                       <p className="text-sm text-[#6A6A66] mb-4 line-clamp-2 leading-relaxed h-[40px]">{repo.description}</p>
+                    ) : (
+                       <p className="text-sm text-[#9A9A95] italic mb-4 h-[40px]">No description provided.</p>
+                    )}
+                    
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-black/5">
+                      {repo.language ? (
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-2 h-2 rounded-full bg-[#0E0E0C]" />
+                          <span className="text-xs font-mono font-medium text-[#9A9A95] truncate max-w-[80px]">{repo.language}</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs font-mono font-medium text-[#9A9A95]">Unknown</span>
+                      )}
+                      {repo.updated_at && (
+                        <span className="text-[10px] uppercase tracking-widest text-[#9A9A95] font-mono shrink-0">
+                          UPD: {new Date(repo.updated_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                        </span>
+                      )}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   )

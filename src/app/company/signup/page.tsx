@@ -21,7 +21,7 @@ export default function CompanySignupPage() {
     const supabase = createClient()
 
     // 1. Sign up user with role metadata
-    const { error: authError } = await supabase.auth.signUp({
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -41,6 +41,7 @@ export default function CompanySignupPage() {
 
     // 2. Insert into public.companies
     const { error: dbError } = await supabase.from("companies").insert({
+      id: authData?.user?.id,
       email,
       company_name: companyName,
     })
@@ -62,81 +63,88 @@ export default function CompanySignupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F5F1] flex flex-col items-center justify-center px-6">
-      <div className="w-full max-w-md">
-        <Link href="/" className="flex items-center gap-2 mb-8">
-          <div className="w-7 h-7 bg-[#0E0E0C] rounded-lg border border-black/20 flex items-center justify-center">
-             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <main className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center px-6 py-20 selection:bg-[#0F52BA]/20 relative overflow-hidden">
+      
+      {/* Orbs */}
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#0F52BA]/10 rounded-full filter blur-[100px] pointer-events-none -translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#0A7250]/10 rounded-full filter blur-[100px] pointer-events-none translate-y-1/2 translate-x-1/2" />
+
+      <div className="w-full max-w-md relative z-10 animate-fade-in">
+        <Link href="/" className="flex items-center justify-center gap-2 mb-10 hover:scale-105 transition-transform">
+          <div className="w-8 h-8 bg-gradient-to-br from-[#0E0E0C] to-[#3B3B38] rounded-full flex items-center justify-center shadow-inner">
+             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-white drop-shadow-sm">
               <path d="M3 13L8 3L13 13" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M5 9.5H11" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
             </svg>
           </div>
-          <span className="font-serif text-lg font-medium text-[#0E0E0C]">verq for companies</span>
+          <span className="font-serif text-2xl font-bold text-[#0E0E0C] tracking-tight">verq for companies</span>
         </Link>
 
-        <h1 className="font-serif text-3xl text-[#0E0E0C] mb-2">
-          Discover verified builders
-        </h1>
-        <p className="text-sm text-[#6A6A66] mb-8">
-          Create a company account to search, filter, and shortlist India's best student developers.
-        </p>
+        <div className="text-center mb-8">
+          <h1 className="font-serif text-4xl text-[#0E0E0C] font-bold mb-2 tracking-tight">
+            Discover elite builders
+          </h1>
+          <p className="text-[#6A6A66]">
+            Search, filter, and shortlist India's top verified developers.
+          </p>
+        </div>
 
-        <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">Company Name</label>
+        <form className="bg-white/80 backdrop-blur-xl border border-black/5 rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)]" onSubmit={(e) => { e.preventDefault(); handleSignup(); }}>
+          <div className="mb-5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A6A66] mb-2 pl-1">Company Name</label>
             <input
               type="text"
               placeholder="Acme Corp"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
-              className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0E0E0C] transition-colors"
+              className="w-full bg-[#FAFAFA] border border-black/5 rounded-xl px-4 py-3.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] focus:bg-white focus:border-[#0F52BA]/50 focus:ring-4 focus:ring-[#0F52BA]/10 outline-none transition-all"
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">Work Email</label>
+          <div className="mb-5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A6A66] mb-2 pl-1">Work Email</label>
             <input
               type="email"
               placeholder="you@acme.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0E0E0C] transition-colors"
+              className="w-full bg-[#FAFAFA] border border-black/5 rounded-xl px-4 py-3.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] focus:bg-white focus:border-[#0F52BA]/50 focus:ring-4 focus:ring-[#0F52BA]/10 outline-none transition-all"
             />
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-[#0E0E0C] mb-1.5">Password</label>
+          <div className="mb-8">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A6A66] mb-2 pl-1">Password</label>
             <input
               type="password"
               placeholder="Min. 8 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0E0E0C] transition-colors"
+              className="w-full bg-[#FAFAFA] border border-black/5 rounded-xl px-4 py-3.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] focus:bg-white focus:border-[#0F52BA]/50 focus:ring-4 focus:ring-[#0F52BA]/10 outline-none transition-all"
             />
           </div>
 
           {message && (
-            <div className={`mb-4 p-3 rounded-lg text-sm ${
+            <div className={`mb-6 p-4 rounded-xl text-sm font-medium ${
               messageType === "error"
                 ? "bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626]"
-                : "bg-[#E4F4EE] border border-[#9FE1CB] text-[#085041]"
+                : "bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250]"
             }`}>
               {message}
             </div>
           )}
 
           <button
-            onClick={handleSignup}
+            type="submit"
             disabled={loading || !companyName || !email || !password}
-            className="w-full bg-[#0E0E0C] text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-[#3B3B38] transition-colors disabled:opacity-50"
+            className="w-full bg-[#0E0E0C] text-white text-sm font-semibold py-4 rounded-xl shadow-[0_4px_14px_rgb(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
           >
             {loading ? "Creating account..." : "Create company account"}
           </button>
-        </div>
+        </form>
 
-        <p className="text-center text-sm text-[#6A6A66] mt-4">
+        <p className="text-center text-sm text-[#6A6A66] mt-8">
           Are you a student?{" "}
-          <Link href="/signup" className="text-[#0E0E0C] font-medium hover:underline">
+          <Link href="/signup" className="text-[#0E0E0C] font-semibold hover:underline">
             Sign up as builder
           </Link>
         </p>

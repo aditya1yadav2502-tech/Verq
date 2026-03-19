@@ -85,6 +85,15 @@ export async function POST(request: NextRequest) {
       language: r.language
     }));
 
+    const all_repos = repos.slice(0, 30).map(r => ({
+      name: r.name,
+      description: r.description,
+      url: `https://github.com/${r.full_name}`,
+      stars: r.stargazers_count,
+      language: r.language,
+      updated_at: r.pushed_at || r.updated_at
+    }));
+
     // 5. Upsert into Supabase
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -105,7 +114,8 @@ export async function POST(request: NextRequest) {
         scored_at: new Date().toISOString(),
         top_repos,
         languages,
-        recommended_projects: scores.recommended_projects || []
+        recommended_projects: scores.recommended_projects || [],
+        all_repos
       })
       .eq("email", user.email);
 

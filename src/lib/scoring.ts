@@ -301,10 +301,10 @@ Based on their repository data below, grade their skill level from 0 to 100 on f
 - Deployment: Reward repos with homepages and github pages.
 - Overall: Provide a realistic aggregate score.
 
-CRITICAL: You must also analyze their weakest areas (e.g. lack of documentation, no deployments, no complex projects) and generate exactly 3 highly specific, actionable project ideas that the candidate should build NEXT to improve their skills and raise their score. 
+CRITICAL: You must also analyze their weakest areas across the 5 dimensions. Instead of generic project ideas, generate exactly 3 highly specific, actionable steps the candidate should take right now to directly improve their score. For example: "Your deployment score is 25. Adding a working Vercel deploy link and a CI workflow to your main repo will bump it to 85."
 
 Return ONLY a strictly valid JSON object exactly matching this interface (no markdown tags, no backticks):
-{"code_quality": number, "project_complexity": number, "commit_consistency": number, "documentation": number, "deployment": number, "overall": number, "recommended_projects": [{"title": "String", "description": "String (1-2 sentences explaining why this project helps their specific weak points)"}]}
+{"code_quality": number, "project_complexity": number, "commit_consistency": number, "documentation": number, "deployment": number, "overall": number, "recommended_projects": [{"title": "String (e.g. 'Deploy main repo to Vercel')", "description": "String (1-2 sentences explaining exactly what to do and how it will improve their specific score)"}]}
 
 Data: ${JSON.stringify(profileSummary).substring(0, 8000)}`;
 
@@ -329,4 +329,14 @@ Data: ${JSON.stringify(profileSummary).substring(0, 8000)}`;
     console.error("Gemini AI failed, falling back to heuristics:", err);
     return heuristicScores;
   }
+}
+
+export function getRelativeRanking(score: number, language?: string): string {
+  const langStr = language ? ` in ${language}` : " overall";
+  if (score >= 95) return `Top 1%${langStr}`;
+  if (score >= 90) return `Top 5%${langStr}`;
+  if (score >= 80) return `Top 12%${langStr}`;
+  if (score >= 70) return `Top 25%${langStr}`;
+  if (score >= 60) return `Top 40%${langStr}`;
+  return `Building momentum${langStr}`;
 }

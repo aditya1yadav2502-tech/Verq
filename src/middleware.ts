@@ -33,8 +33,14 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect /dashboard — redirect to /signin if not logged in
-  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+  // Protect entire app — redirect to /signin if not logged in
+  const isPublicRoute = 
+    request.nextUrl.pathname.startsWith("/signin") ||
+    request.nextUrl.pathname.startsWith("/signup") ||
+    request.nextUrl.pathname.startsWith("/auth") ||
+    request.nextUrl.pathname.startsWith("/api");
+
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
     url.pathname = "/signin"
     return NextResponse.redirect(url)

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import SignOutButton from "@/components/SignOutButton"
 import RescoreButton from "@/components/RescoreButton"
+import GenerateActionPlanButton from "@/components/GenerateActionPlanButton"
 import Navbar from "@/components/Navbar"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import ShareModal from "@/components/ShareModal"
@@ -262,22 +263,22 @@ export default async function DashboardPage() {
                 </div>
               )}
 
-              {student.recommended_projects && (student.recommended_projects as any[]).length > 0 && (
-                <div className="bg-white border text-left border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden group/recs">
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-[#0F52BA]/5 to-transparent rounded-bl-full pointer-events-none" />
-                  
-                  <div className="flex items-center gap-3 mb-6 relative z-10">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] flex items-center justify-center shadow-inner">
-                      <span className="text-white text-lg">💡</span>
-                    </div>
-                    <div>
-                      <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0E0E0C] tracking-tight">Action Plan to 100</h3>
-                      <p className="text-[#6A6A66] text-sm mt-0.5">Specific, actionable steps to instantly boost your Verq score.</p>
-                    </div>
+              <div className="bg-white border text-left border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden group/recs">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-[#0F52BA]/5 to-transparent rounded-bl-full pointer-events-none" />
+                
+                <div className="flex items-center gap-3 mb-6 relative z-10">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] flex items-center justify-center shadow-inner">
+                    <span className="text-white text-lg">💡</span>
                   </div>
+                  <div>
+                    <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0E0E0C] tracking-tight">Action Plan to 100</h3>
+                    <p className="text-[#6A6A66] text-sm mt-0.5">Specific, actionable steps to instantly boost your Verq score.</p>
+                  </div>
+                </div>
 
-                  <div className="space-y-4 relative z-10">
-                    {(student.recommended_projects as { title: string; description: string }[]).map((proj, idx) => (
+                <div className="space-y-4 relative z-10">
+                  {student.recommended_projects && (student.recommended_projects as any[]).length > 0 ? (
+                    (student.recommended_projects as { title: string; description: string }[]).map((proj, idx) => (
                       <div key={idx} className="bg-[#FAFAFA] border border-black/5 rounded-2xl p-5 hover:bg-white hover:border-black/10 hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] transition-all flex gap-4">
                         <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-[#0F52BA] font-bold text-sm shrink-0 border border-black/5 mt-0.5">
                           {idx + 1}
@@ -287,10 +288,15 @@ export default async function DashboardPage() {
                           <p className="text-sm text-[#555] leading-relaxed">{proj.description}</p>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    ))
+                  ) : (
+                    <div className="bg-[#FAFAFA] border border-black/5 rounded-2xl p-6 text-center">
+                      <p className="text-[#6A6A66] mb-4 text-sm">Your tactical coaching plan has not been generated yet.</p>
+                      <GenerateActionPlanButton githubUrl={student?.github_url} />
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             {/* Right Column: Dark Mode Score Breakdown */}
             <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
               <div className="bg-[#0E0E0C] text-white rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.15)] relative overflow-hidden h-full">

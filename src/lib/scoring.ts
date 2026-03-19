@@ -248,6 +248,20 @@ function calculateHeuristicScores(
     )
   );
 
+  // Generate smart fallback recommendations based on weakest dimensions
+  const fallbackRecs: { title: string; description: string }[] = [];
+  const dims = [
+    { name: "Code quality", score: code_quality, fix: { title: "Improve code quality", description: `Your code quality score is ${code_quality}/100. Add TypeScript types, use ESLint, and write modular functions across your repos to push this above 70.` }},
+    { name: "Project complexity", score: project_complexity, fix: { title: "Build a more complex project", description: `Your project complexity score is ${project_complexity}/100. Ship a full-stack app with auth, a database, and an API layer to demonstrate real engineering depth.` }},
+    { name: "Commit consistency", score: commit_consistency, fix: { title: "Commit more consistently", description: `Your commit consistency score is ${commit_consistency}/100. Push at least 3-5 commits per week across your active repos to show a steady shipping cadence.` }},
+    { name: "Documentation", score: documentation, fix: { title: "Write better READMEs", description: `Your documentation score is ${documentation}/100. Add detailed READMEs with setup instructions, architecture diagrams, and screenshots to your top 3 repos.` }},
+    { name: "Deployment", score: deployment, fix: { title: "Deploy your projects live", description: `Your deployment score is ${deployment}/100. Add a working Vercel/Netlify deploy link and a CI/CD GitHub Action to your main repo to instantly boost this.` }},
+  ];
+  dims.sort((a, b) => a.score - b.score);
+  for (let i = 0; i < 3 && i < dims.length; i++) {
+    fallbackRecs.push(dims[i].fix);
+  }
+
   return {
     code_quality,
     project_complexity,
@@ -255,7 +269,7 @@ function calculateHeuristicScores(
     documentation,
     deployment,
     overall,
-    recommended_projects: []
+    recommended_projects: fallbackRecs
   };
 }
 
@@ -274,7 +288,7 @@ export async function calculateScores(
 
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const profileSummary = repos.map((r, i) => {
       const details = repoDetails[i];

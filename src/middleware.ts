@@ -40,10 +40,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Redirect /signin and /signup to /dashboard if already logged in
+  // Redirect /, /signin, and /signup to /dashboard if already logged in
   if (
     user &&
-    (request.nextUrl.pathname === "/signin" ||
+    (request.nextUrl.pathname === "/" ||
+      request.nextUrl.pathname === "/signin" ||
       request.nextUrl.pathname === "/signup")
   ) {
     const url = request.nextUrl.clone()

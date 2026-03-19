@@ -191,6 +191,60 @@ export default async function DashboardPage() {
               </div>
             </div>
 
+              {student.languages && (student.languages as any[]).length > 0 && (
+                <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                  <h3 className="font-serif text-xl font-bold text-[#0E0E0C] mb-5 tracking-tight">Languages</h3>
+                  <div className="flex flex-wrap gap-2.5">
+                    {(student.languages as { name: string; bytes: number }[]).slice(0, 5).map((lang) => (
+                      <div key={lang.name} className="flex items-center gap-2 bg-[#FAFAFA] border border-black/5 px-3 py-1.5 rounded-full hover:bg-white hover:shadow-sm hover:-translate-y-0.5 transition-all">
+                        <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] shadow-sm" />
+                        <span className="text-sm font-medium text-[#0E0E0C]">{lang.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {student.top_repos && (student.top_repos as any[]).length > 0 && (
+                <div className="bg-white border border-black/5 rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-serif text-xl font-bold text-[#0E0E0C] tracking-tight">Best Work</h3>
+                    <a href={student.github_url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#0F52BA] hover:underline">
+                      View GitHub →
+                    </a>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4">
+                    {(student.top_repos as { name: string; description: string; url: string; stars: number; language: string }[]).map((repo) => (
+                      <a
+                        key={repo.name}
+                        href={repo.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-5 bg-[#FAFAFA] border border-black/5 rounded-2xl hover:bg-white hover:border-black/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all group"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <p className="text-base font-bold text-[#0E0E0C] group-hover:text-[#0F52BA] transition-colors">{repo.name}</p>
+                          {repo.stars > 0 && (
+                            <div className="flex items-center gap-1.5 bg-white border border-black/5 px-2 py-0.5 rounded-md text-xs font-medium text-[#6A6A66] shadow-sm">
+                              <span className="text-[#D97706]">★</span>
+                              <span>{repo.stars}</span>
+                            </div>
+                          )}
+                        </div>
+                        {repo.description && (
+                          <p className="text-sm text-[#6A6A66] mb-4 line-clamp-2 leading-relaxed">{repo.description}</p>
+                        )}
+                        {repo.language && (
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-[#0E0E0C]" />
+                            <span className="text-xs font-mono font-medium text-[#9A9A95]">{repo.language}</span>
+                          </div>
+                        )}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             {/* Right Column: Dark Mode Score Breakdown */}
             <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
               <div className="bg-[#0E0E0C] text-white rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.15)] relative overflow-hidden h-full">

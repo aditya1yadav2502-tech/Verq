@@ -11,14 +11,26 @@ export default function RescoreButton({ githubUrl }: { githubUrl: string | null 
     if (!githubUrl) return
     setLoading(true)
     try {
-      await fetch("/api/score", {
+      const response = await fetch("/api/score", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ github_url: githubUrl }),
       })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        alert("Error: " + (data.error || data.warning || "Something went wrong"))
+        return
+      }
+
+      if (data.warning) {
+        alert("Warning: " + data.warning)
+      }
+
       router.refresh()
-    } catch {
-      // silent fail
+    } catch (e: any) {
+      alert("Network Error: Could not reach the server")
     } finally {
       setLoading(false)
     }

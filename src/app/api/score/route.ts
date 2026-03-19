@@ -1,41 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchUserRepos, fetchRepoDetails } from "@/lib/github";
 import { calculateScores } from "@/lib/scoring";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
-// Simple in-memory rate limiting
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 5; // max requests
-const WINDOW_MS = 60 * 1000; // per minute
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return true;
-  }
-
-  if (entry.count >= RATE_LIMIT) {
-    return false;
-  }
-
-  entry.count++;
-  return true;
+// Initialize Redis and Ratelimit only if URLs are provided (graceful fallback)
+let ratelimit: Ratelimit | null = null;
+if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+  
+  // Create a new ratelimiter that allows 3 requests per 1 minute per IP
+  ratelimit = new Ratelimit({
+    redis: redis,
+    limiter: Ratelimit.slidingWindow(3, "1 m"),
+  });
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limit check
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      "unknown";
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json(
-        { error: "Too many requests. Please try again in a minute." },
-        { status: 429 }
-      );
+    // Production Rate limit check
+    if (ratelimit) {
+      const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+      const { success } = await ratelimit.limit(`ratelimit_${ip}`);
+      if (!success) {
+        return NextResponse.json(
+          { error: "Too many scoring requests. Please try again in 1 minute." },
+          { status: 429 }
+        );
+      }
     }
 
     const body = await request.json();
@@ -90,6 +86,13 @@ export async function POST(request: NextRequest) {
     }));
 
     // 5. Upsert into Supabase
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user || !user.email) {
+      return NextResponse.json({ error: "Unauthorized. Please log in to score your GitHub." }, { status: 401 });
+    }
+
     const { error: dbError } = await supabase
       .from("students")
       .update({
@@ -103,7 +106,7 @@ export async function POST(request: NextRequest) {
         top_repos,
         languages
       })
-      .eq("github_url", github_url);
+      .eq("email", user.email);
 
     if (dbError) {
       console.error("Supabase update error:", dbError);

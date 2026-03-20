@@ -155,7 +155,7 @@ export default async function StudentProfile({ params }: PageProps) {
             )}
             {isScored && student.scored_at && (
               <div className="ml-auto text-right w-full sm:w-auto mt-4 sm:mt-0">
-                <p className="text-[10px] uppercase font-mono tracking-widest text-[#9A9A95] mb-1">Last Updated</p>
+                <p className="text-[10px] uppercase font-mono tracking-widest text-[#9A9A95] mb-2 pl-1">Verqify Score Breakdown</p>
                 <p className="text-sm font-medium text-[#0E0E0C]">
                   {new Date(student.scored_at).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
                 </p>
@@ -164,7 +164,7 @@ export default async function StudentProfile({ params }: PageProps) {
             
             {isScored && (
               <div className="ml-auto flex items-center w-full sm:w-auto mt-4 sm:mt-0">
-                <ShareModal student={student} topLanguage={topLanguage} />
+                      <ShareModal student={student} topLanguage={topLanguage} />
               </div>
             )}
           </div>
@@ -216,7 +216,7 @@ export default async function StudentProfile({ params }: PageProps) {
                         )}
                       </div>
                       {repo.description && (
-                        <p className="text-sm text-[#6A6A66] mb-4 line-clamp-2 leading-relaxed">{repo.description}</p>
+                        <p className="text-sm text-[#6A6A66] mb-4 leading-relaxed">{repo.description}</p>
                       )}
                       {repo.language && (
                         <div className="flex items-center gap-1.5">
@@ -298,9 +298,9 @@ export default async function StudentProfile({ params }: PageProps) {
                       )}
                     </div>
                     {repo.description ? (
-                       <p className="text-sm text-[#6A6A66] mb-4 line-clamp-2 leading-relaxed h-[40px]">{repo.description}</p>
+                       <p className="text-sm text-[#6A6A66] mb-4 leading-relaxed">{repo.description}</p>
                     ) : (
-                       <p className="text-sm text-[#9A9A95] italic mb-4 h-[40px]">No description provided.</p>
+                       <p className="text-sm text-[#9A9A95] italic mb-4">No description provided.</p>
                     )}
                     
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-black/5">

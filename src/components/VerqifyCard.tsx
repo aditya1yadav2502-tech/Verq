@@ -4,7 +4,7 @@ import { useRef, useState } from "react"
 import * as htmlToImage from "html-to-image"
 import VerifiedBadge from "./VerifiedBadge"
 
-interface VerqCardProps {
+interface VerqifyCardProps {
   name: string
   score: number | string
   college: string
@@ -12,7 +12,7 @@ interface VerqCardProps {
   avatar: string
 }
 
-export default function VerqCard({ name, score, college, topLanguage, avatar }: VerqCardProps) {
+export default function VerqifyCard({ name, score, college, topLanguage, avatar }: VerqifyCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [downloading, setDownloading] = useState(false)
 
@@ -30,11 +30,11 @@ export default function VerqCard({ name, score, college, topLanguage, avatar }: 
         }
       })
       const link = document.createElement("a")
-      link.download = `verq-${name.toLowerCase().replace(/\s+/g, '-')}.png`
+      link.download = `verqify-${name.toLowerCase().replace(/\s+/g, '-')}.png`
       link.href = dataUrl
       link.click()
     } catch (err) {
-      console.error("Failed to generate Verq Card capture.", err)
+      console.error("Failed to generate Verqify Card capture.", err)
     } finally {
       setDownloading(false)
     }
@@ -86,7 +86,7 @@ export default function VerqCard({ name, score, college, topLanguage, avatar }: 
                   <path d="M5 9.5H11" stroke="#0E0E0C" strokeWidth="2.5" strokeLinecap="round"/>
                 </svg>
               </div>
-              <span className="font-serif text-xl font-black text-white tracking-tight">verq</span>
+              <span className="font-serif text-xl font-black text-white tracking-tight">Verqify</span>
             </div>
             <VerifiedBadge className="w-6 h-6 drop-shadow-[0_0_10px_rgba(15,82,186,0.5)]" />
           </div>
@@ -116,7 +116,7 @@ export default function VerqCard({ name, score, college, topLanguage, avatar }: 
 
              <div className="w-full grid grid-cols-2 gap-4 mb-4">
                 <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
-                   <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">Verq Score</p>
+                   <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">Verqify Score</p>
                    <p className="font-serif text-4xl font-bold text-white leading-none">
                      {score}
                    </p>
@@ -137,7 +137,7 @@ export default function VerqCard({ name, score, college, topLanguage, avatar }: 
                <span>Trust Mark 2.0</span>
                <div className="flex items-center gap-1.5">
                  <div className="w-1.5 h-1.5 rounded-full bg-[#0F52BA] animate-pulse" />
-                 <span>Verq Protocol</span>
+                 <span>Verqify Protocol</span>
                </div>
             </div>
           </div>

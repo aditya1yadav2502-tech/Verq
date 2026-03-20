@@ -1,8 +1,8 @@
 export default function PulseFeed() {
   const events = [
-    { builder: "Aditya Y.", action: "pushed 3 commits to", target: "verq-engine", time: "2 mins ago", color: "bg-[#0F52BA]", icon: "⚡️" },
+    { builder: "Aditya Y.", action: "pushed 3 commits to", target: "verqify-engine", time: "2 mins ago", color: "bg-[#0F52BA]", icon: "⚡️" },
     { builder: "Aarav S.", action: "deployed", target: "nexus-engine to production", time: "14 mins ago", color: "bg-[#0A7250]", icon: "🚀" },
-    { builder: "Neha R.", action: "generated their Verq Score:", target: "76/100", time: "1 hour ago", color: "bg-[#D97706]", icon: "🎯" },
+    { builder: "Neha R.", action: "generated their Verqify Score:", target: "76/100", time: "1 hour ago", color: "bg-[#D97706]", icon: "🎯" },
     { builder: "Rohan G.", action: "open-sourced", target: "aether-ui library", time: "3 hours ago", color: "bg-purple-500", icon: "📦" },
   ];
 

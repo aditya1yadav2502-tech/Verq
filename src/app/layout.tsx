@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Verq — Verified by work, not words.",
-    template: "%s | Verq",
+    default: "Verqify — Verified by work, not words.",
+    template: "%s | Verqify",
   },
   description:
     "India's first verified builder platform. Build real projects, get verified by AI, get discovered by companies.",
@@ -28,16 +28,16 @@ export const metadata: Metadata = {
     "India",
   ],
   openGraph: {
-    title: "Verq — Verified by work, not words.",
+    title: "Verqify — Verified by work, not words.",
     description:
       "Build real projects. Get verified by AI. Let companies discover you.",
     type: "website",
     url: "https://verq-two.vercel.app",
-    siteName: "Verq",
+    siteName: "Verqify",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Verq — Verified by work, not words.",
+    title: "Verqify — Verified by work, not words.",
     description:
       "India's first verified builder platform for student developers.",
   },

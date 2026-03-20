@@ -99,7 +99,8 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user || !user.email) {
-      return NextResponse.json({ error: "Unauthorized. Please log in to score your GitHub." }, { status: 401 });
+      return NextResponse.json({ error: "Sign in to generate your Verqify Score" }, { status: 401 })
+;
     }
 
     const { error: dbError } = await supabase

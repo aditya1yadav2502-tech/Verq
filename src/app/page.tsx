@@ -31,7 +31,7 @@ export default function Home() {
             </h1>
             
             <p className="text-lg sm:text-xl text-[#6A6A66] mb-10 leading-relaxed max-w-2xl mx-auto">
-              Build real projects. Get verified by the Verq engine. Let top companies discover your talent instantly — no resumes, no ATS, no silence.
+              Build real projects. Get verified by the Verqify engine. Let top companies discover your talent instantly — no resumes, no ATS, no silence.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full sm:w-auto">
@@ -39,7 +39,7 @@ export default function Home() {
                 href="/signup"
                 className="w-full sm:w-auto px-8 py-4 bg-[#0E0E0C] text-white text-base font-semibold rounded-full shadow-[0_0_40px_rgba(15,82,186,0.3)] hover:shadow-[0_0_60px_rgba(15,82,186,0.5)] hover:-translate-y-1 transition-all duration-300 border border-white/10"
               >
-                Get your Verq score
+                Get your Verqify score
               </Link>
               <Link
                 href="/explore"
@@ -68,7 +68,7 @@ export default function Home() {
             {[
               { num: "1", title: "Sign up & link GitHub", desc: "Create your account securely and connect your public GitHub profile.", iconBg: "bg-[#E8EFFE]", iconColor: "text-[#0F52BA]" },
               { num: "2", title: "The Engine analyzes", desc: "Our algorithm automatically evaluates your repos across 5 critical dimensions.", iconBg: "bg-[#E4F4EE]", iconColor: "text-[#0A7250]" },
-              { num: "3", title: "Companies find you", desc: "Top tech companies actively browse Verq to find verified builders directly.", iconBg: "bg-[#FEF3C7]", iconColor: "text-[#D97706]" }
+              { num: "3", title: "Companies find you", desc: "Top tech companies actively browse Verqify to find verified builders directly.", iconBg: "bg-[#FEF3C7]", iconColor: "text-[#D97706]" }
             ].map((step, i) => (
               <div 
                 key={i} 
@@ -77,7 +77,7 @@ export default function Home() {
                 <div className={`w-14 h-14 ${step.iconBg} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                   <span className={`font-serif text-2xl ${step.iconColor} font-semibold`}>{step.num}</span>
                 </div>
-                <h3 className="font-serif text-xl text-[#0E0E0C] mb-3">{step.title}</h3>
+                <h3 className="font-serif text-2xl font-bold text-[#0E0E0C] mb-3">Verqify Protocol</h3>
                 <p className="text-[#6A6A66] leading-relaxed">
                   {step.desc}
                 </p>
@@ -106,7 +106,7 @@ export default function Home() {
               Five dimensions of<br/>real skill.
             </h2>
             <p className="text-[#9A9A95] text-lg leading-relaxed mb-8 max-w-md">
-              Verq doesn&apos;t just count your stars. We look at code quality, architecture complexity, consistency, documentation habits, and how you deploy.
+              Verqify doesn&apos;t just count your stars. We look at code quality, architecture complexity, consistency, documentation habits, and how you deploy.
             </p>
           </div>
 
@@ -139,12 +139,13 @@ export default function Home() {
       {/* CTA */}
       <section className="px-6 py-32 bg-[#FAFAFA]">
         <div className="max-w-4xl mx-auto text-center animate-slide-up">
-          <h2 className="font-serif text-4xl sm:text-6xl text-[#0E0E0C] mb-6 tracking-tight">
-            Ready to get verified?
-          </h2>
-          <p className="text-lg text-[#6A6A66] mb-10 max-w-xl mx-auto">
-            Join elite student builders who are getting discovered by companies through their work, not their resumes.
-          </p>
+          <h1 className="font-serif text-6xl sm:text-8xl text-[#0E0E0C] font-bold mb-6 tracking-tighter leading-[0.9]">
+          Verified by <br />
+          <span className="text-[#0F52BA]">work</span>, not words.
+        </h1>
+        <p className="text-xl sm:text-2xl text-[#6A6A66] mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
+          India&apos;s first verified builder platform. Stop sending resumes. <br className="hidden sm:block" /> Start sending your <span className="text-[#0E0E0C] font-bold underline decoration-[#0F52BA]/30">Verqify Score</span>.
+        </p>
           <Link
             href="/signup"
             className="inline-block px-10 py-5 bg-[#0E0E0C] text-white text-lg font-semibold rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300"
@@ -164,7 +165,7 @@ export default function Home() {
                 <path d="M5 9.5H11" stroke="white" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
-            <span className="font-serif font-bold tracking-tight text-[#0E0E0C]">verq © 2026</span>
+            <span className="font-serif font-bold tracking-tight text-[#0E0E0C]">Verqify © 2026</span>
           </div>
           <div className="flex items-center gap-8">
             <Link href="/leaderboard" className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] transition-colors">

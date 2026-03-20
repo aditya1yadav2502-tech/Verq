@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Verqify
 
-## Getting Started
+> **Verified by work, not words.**
 
-First, run the development server:
+Verqify is India's first verified builder platform. We believe that a student's GitHub impact is a better indicator of success than a traditional resume. Our platform analyzes engineering projects using AI, generates a tactical "Verqify Score," and provides actionable plans to bridge the gap to top-tier skill levels.
+
+## ✨ Core Features
+
+- **Holographic Verqify Card**: A high-end, shareable trading card for developers.
+- **AI Action Plan**: Tactical, personalized steps generated from repository analysis to help you reach a score of 100.
+- **Platform Pulse**: Real-time feed of builder activity across the ecosystem.
+- **Public Profiles**: Verified portfolios that companies can browse directly.
+- **Verified Badge**: The gold standard for builder credibility.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Database & Auth**: [Supabase](https://supabase.com/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **AI**: [Google Gemini Pro](https://deepmind.google/technologies/gemini/) (for repository analysis and tactical feedback)
+- **Deployment**: [Vercel](https://vercel.com/)
+
+## 🚀 Getting Started
+
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📄 License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Owned and operated by Verqify © 2026. All rights reserved.

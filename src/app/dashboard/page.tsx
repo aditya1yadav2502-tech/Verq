@@ -145,7 +145,7 @@ export default async function DashboardPage() {
 
               <div className="flex flex-wrap items-center gap-6 pt-8 mt-10 border-t border-black/5 relative z-10">
                 <div className="flex-1 min-w-[200px]">
-                  <p className="text-[10px] uppercase font-mono tracking-widest text-[#9A9A95] mb-1">Authenticated via GitHub</p>
+                        <p className="text-[10px] uppercase font-mono tracking-widest text-[#9A9A95] mb-2 pl-1">Verqify Score Breakdown</p>
                   <p className="text-sm font-bold text-[#0E0E0C] truncate opacity-60">{student.email}</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -205,7 +205,7 @@ export default async function DashboardPage() {
                           )}
                         </div>
                         {repo.description && (
-                          <p className="text-xs text-[#6A6A66] mb-6 line-clamp-2 leading-relaxed">{repo.description}</p>
+                          <p className="text-xs text-[#6A6A66] mb-6 leading-relaxed">{repo.description}</p>
                         )}
                         <div className="flex items-center justify-between mt-auto">
                            <div className="flex items-center gap-2">
@@ -272,7 +272,7 @@ export default async function DashboardPage() {
                           </div>
                           <div>
                             <h4 className="font-serif text-base font-bold text-[#0E0E0C] mb-2">{proj.title}</h4>
-                            <p className="text-xs text-[#6A6A66] leading-relaxed line-clamp-3">{proj.description}</p>
+                            <p className="text-xs text-[#6A6A66] leading-relaxed">{proj.description}</p>
                           </div>
                         </div>
                       ))
@@ -319,9 +319,9 @@ export default async function DashboardPage() {
                           )}
                         </div>
                         {repo.description ? (
-                           <p className="text-sm text-[#6A6A66] mb-4 line-clamp-2 leading-relaxed h-[40px]">{repo.description}</p>
+                           <p className="text-sm text-[#6A6A66] mb-4 leading-relaxed">{repo.description}</p>
                         ) : (
-                           <p className="text-sm text-[#9A9A95] italic mb-4 h-[40px]">No description provided.</p>
+                           <p className="text-sm text-[#9A9A95] italic mb-4">No description provided.</p>
                         )}
                         
                         <div className="flex items-center justify-between mt-auto pt-4 border-t border-black/5">

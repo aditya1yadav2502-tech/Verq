@@ -139,6 +139,7 @@ export default function EditProfilePage() {
               placeholder="https://github.com/yourusername"
               className="w-full bg-[#F6F5F1] border border-black/10 rounded-lg px-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:border-[#0F52BA] transition-colors"
             />
+            <p className="text-xs text-[#9A9A95] mt-1.5">This is the profile that companies will see on Verqify.</p>
             <p className="text-xs text-[#9A9A95] mt-1.5">Changing this will require re-scoring.</p>
           </div>
 

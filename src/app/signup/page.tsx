@@ -102,7 +102,7 @@ export default function SignupPage() {
               <path fillRule="evenodd" d="M8 0a6 6 0 0 0-6 6c0 4.1 5.3 9.4 5.6 9.7a1 1 0 0 0 1.4 0C9.3 14.8 14 10.1 14 6a6 6 0 0 0-6-6Zm0 9a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
             </svg>
           </div>
-          <span className="font-serif text-2xl font-bold text-[#0E0E0C] tracking-tight">verq</span>
+          <span className="font-serif text-2xl font-bold text-[#0E0E0C] tracking-tight">Verqify</span>
         </Link>
 
         <div className="text-center mb-8">

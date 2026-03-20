@@ -32,7 +32,7 @@ export default function Navbar() {
               <path d="M5 9.5H11" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
             </svg>
           </div>
-          <span className="font-serif text-lg font-bold text-[#0E0E0C] tracking-tight">verq</span>
+          <span className="font-serif text-lg font-bold text-[#0E0E0C] tracking-tight">Verqify</span>
         </Link>
 
         {!loading && (

@@ -199,7 +199,7 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
 
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm font-medium text-[#6A6A66]">
-              Showing <span className="text-[#0E0E0C]">{filteredStudents.length}</span> verified builders
+              Showing <span className="text-[#0E0E0C]">{filteredStudents.length}</span> verified builder{filteredStudents.length !== 1 ? 's' : ''}
             </p>
             <div className="flex items-center gap-2">
               <span className="text-xs text-[#9A9A95] uppercase tracking-widest font-mono">Sort By</span>

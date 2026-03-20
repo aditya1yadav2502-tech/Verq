@@ -21,7 +21,7 @@ export default async function DashboardPage() {
   const currentUserEmail = user?.email || demoEmail
   const isGuest = !user
 
-  const userName = user?.user_metadata?.name || user?.email?.split("@")[0] || (isGuest ? "Guest Builder" : "Builder")
+  const userName = user?.user_metadata?.name || user?.email?.split("@")[0] || "Aditya"
 
   // Fetch student record
   const { data: student } = await supabase

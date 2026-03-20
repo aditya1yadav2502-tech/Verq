@@ -4,7 +4,6 @@ export default function PulseFeed() {
     { builder: "Aarav S.", action: "deployed", target: "nexus-engine to production", time: "14 mins ago", color: "bg-[#0A7250]", icon: "🚀" },
     { builder: "Neha R.", action: "generated their Verq Score:", target: "76/100", time: "1 hour ago", color: "bg-[#D97706]", icon: "🎯" },
     { builder: "Rohan G.", action: "open-sourced", target: "aether-ui library", time: "3 hours ago", color: "bg-purple-500", icon: "📦" },
-    { builder: "Sarah C.", action: "reached Top 1%", target: "in Rust globally", time: "5 hours ago", color: "bg-[#0F52BA]", icon: "🏆" },
   ];
 
   return (

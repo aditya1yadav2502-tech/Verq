@@ -40,11 +40,14 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/auth") ||
     request.nextUrl.pathname.startsWith("/api");
 
+  // Temporarily disable sign-in requirement for "Public Access" mode
+  /* 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
     url.pathname = "/signin"
     return NextResponse.redirect(url)
   }
+  */
 
   // Redirect /, /signin, and /signup to /dashboard if already logged in
   if (

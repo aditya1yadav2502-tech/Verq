@@ -55,18 +55,17 @@ export default function Navbar() {
             >
               Explore
             </Link>
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5"
+            >
+              Dashboard
+            </Link>
+
             {user ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5"
-                >
-                  Dashboard
-                </Link>
-                <div className="ml-1 pl-3 border-l border-black/10">
-                  <SignOutButton />
-                </div>
-              </>
+              <div className="ml-1 pl-3 border-l border-black/10">
+                <SignOutButton />
+              </div>
             ) : (
               <div className="flex items-center gap-1 ml-1 sm:ml-2">
                 <Link

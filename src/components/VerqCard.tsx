@@ -20,20 +20,17 @@ export default function VerqCard({ name, score, college, topLanguage, avatar }: 
     if (!cardRef.current) return
     setDownloading(true)
     try {
-      // Small timeout ensures the DOM has fully painted any dynamic fonts/assets before capture
       await new Promise(resolve => setTimeout(resolve, 100));
-      
       const dataUrl = await htmlToImage.toPng(cardRef.current, { 
         quality: 1, 
-        pixelRatio: 3, // High-res export for sharing
+        pixelRatio: 3,
         style: {
           transform: 'scale(1)',
           transformOrigin: 'top left'
         }
       })
-      
       const link = document.createElement("a")
-      link.download = `verq-${name.toLowerCase().replace(/\\s+/g, '-')}.png`
+      link.download = `verq-${name.toLowerCase().replace(/\s+/g, '-')}.png`
       link.href = dataUrl
       link.click()
     } catch (err) {
@@ -45,86 +42,137 @@ export default function VerqCard({ name, score, college, topLanguage, avatar }: 
 
   return (
     <div className="flex flex-col items-center">
-      {/* The Actual Downloadable Card */}
+      {/* 
+          The Actual Downloadable Card 
+          We use a fixed size (340x500) for a standard "Trading Card" aspect ratio.
+      */}
       <div 
         ref={cardRef} 
-        className="relative w-[340px] h-[480px] bg-gradient-to-br from-[#0E0E0C] via-[#1A1A18] to-[#0E0E0C] rounded-[2rem] p-8 text-white shadow-2xl overflow-hidden"
+        className="relative w-[340px] h-[520px] bg-[#0E0E0C] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all"
+        style={{
+          fontFamily: "'Inter', sans-serif",
+          boxShadow: "0 30px 60px -12px rgba(0,0,0,0.5), 0 18px 36px -18px rgba(0,0,0,0.5)"
+        }}
       >
-        {/* Glow Effects */}
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#0F52BA] rounded-full filter blur-[80px] opacity-40 mix-blend-screen" />
-        <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-[#0A7250] rounded-full filter blur-[80px] opacity-30 mix-blend-screen" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-white/[0.02] rounded-full filter blur-xl border border-white/5 pointer-events-none" />
-        
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8 relative z-10">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center shadow-inner">
-               <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                <path d="M3 13L8 3L13 13" stroke="#0E0E0C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M5 9.5H11" stroke="#0E0E0C" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <span className="font-serif text-xl font-bold tracking-tight">verq</span>
-          </div>
-          <VerifiedBadge className="w-6 h-6" />
+        {/* --- 1. MESH BACKGROUND BLOBS --- */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Blue Blob - Top Right */}
+          <div className="absolute -top-10 -right-10 w-72 h-72 bg-[#0F52BA] rounded-full filter blur-[80px] opacity-40 mix-blend-screen animate-pulse" style={{ animationDuration: '6s' }} />
+          {/* Green/Emerald Blob - Center Left */}
+          <div className="absolute top-[30%] -left-10 w-64 h-64 bg-[#0A7250] rounded-full filter blur-[90px] opacity-30 mix-blend-screen animate-pulse" style={{ animationDuration: '8s', animationDelay: '1s' }} />
+          {/* Amber Blob - Bottom Right */}
+          <div className="absolute -bottom-20 right-0 w-80 h-80 bg-[#D97706] rounded-full filter blur-[100px] opacity-20 mix-blend-screen animate-pulse" style={{ animationDuration: '7s', animationDelay: '2s' }} />
         </div>
 
-        {/* Core Content */}
-        <div className="flex flex-col items-center justify-center flex-1 h-[65%] relative z-10 text-center">
-          <div className="w-24 h-24 bg-gradient-to-br from-white to-[#E8EFFE] p-1 rounded-full mb-6 shadow-[0_0_30px_rgba(15,82,186,0.3)]">
-            <div className="w-full h-full bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] rounded-full flex items-center justify-center">
-              <span className="font-serif text-4xl font-bold text-white shadow-sm">{avatar}</span>
-            </div>
-          </div>
+        {/* --- 2. HOLOGRAPHIC SHIMMER OVERLAY --- */}
+        <div 
+          className="absolute inset-0 pointer-events-none z-10 opacity-30"
+          style={{
+            background: "linear-gradient(135deg, transparent 0%, transparent 45%, rgba(255,255,255,0.4) 50%, transparent 55%, transparent 100%)",
+            backgroundSize: "250% 250%",
+            backgroundPosition: "-20% -20%"
+          }}
+        />
+
+        {/* --- 3. MAIN GLASS CONTAINER --- */}
+        <div className="absolute inset-4 z-20 bg-white/[0.03] backdrop-blur-[30px] border border-white/10 rounded-[2rem] p-8 flex flex-col items-center shadow-2xl">
           
-          <h2 className="font-serif text-3xl font-bold mb-1 truncate w-full px-2" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}>{name}</h2>
-          <p className="text-white/60 text-sm mb-6 truncate w-full px-4">{college || "Builder"}</p>
-          
-          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
-          
-          <div className="flex items-center justify-center gap-6 w-full px-2">
-            <div className="flex-1 flex flex-col items-center">
-              <div className="text-[10px] uppercase tracking-widest text-[#A7D7C5] mb-1 font-mono font-semibold">Verq Score</div>
-              <div className="font-serif text-5xl font-bold" style={{ textShadow: "0 0 20px rgba(10,114,80,0.4)" }}>{score}</div>
-            </div>
-            {topLanguage && (
-              <div className="w-[1px] h-12 bg-white/20" />
-            )}
-            {topLanguage && (
-              <div className="flex-1 flex flex-col items-center">
-                <div className="text-[10px] uppercase tracking-widest text-[#BFD4FF] mb-1 font-mono font-semibold">Top Stack</div>
-                <div className="font-mono text-xl mt-3 font-semibold text-white/90 truncate max-w-full px-1">{topLanguage}</div>
+          {/* Card Header - Centered logo */}
+          <div className="w-full flex items-center justify-between mb-8">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-white rounded-lg flex items-center justify-center shadow-lg transform -rotate-6">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 13L8 3L13 13" stroke="#0E0E0C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M5 9.5H11" stroke="#0E0E0C" strokeWidth="2.5" strokeLinecap="round"/>
+                </svg>
               </div>
-            )}
+              <span className="font-serif text-xl font-black text-white tracking-tight">verq</span>
+            </div>
+            <VerifiedBadge className="w-6 h-6 drop-shadow-[0_0_10px_rgba(15,82,186,0.5)]" />
+          </div>
+
+          {/* Builder Identity Panel */}
+          <div className="flex flex-col items-center flex-1 w-full justify-center">
+             <div className="relative mb-6">
+                <div className="w-24 h-24 bg-gradient-to-br from-white/20 to-transparent p-[1px] rounded-full shadow-inner">
+                  <div className="w-full h-full bg-gradient-to-br from-[#0F52BA] to-[#012A6B] rounded-full flex items-center justify-center border border-white/10">
+                    <span className="font-serif text-4xl font-bold text-white tracking-tighter" style={{ textShadow: "0 2px 10px rgba(0,0,0,0.3)" }}>
+                      {avatar}
+                    </span>
+                  </div>
+                </div>
+                {/* Micro Floating Tag */}
+                <div className="absolute -right-2 bottom-1 bg-white text-[#0E0E0C] text-[7px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full shadow-lg border border-black/5">
+                   Verified
+                </div>
+             </div>
+             
+             <h2 className="font-serif text-3xl font-black text-white text-center leading-tight mb-1 truncate w-full px-2" style={{ textShadow: "0 4px 12px rgba(0,0,0,0.4)" }}>
+               {name}
+             </h2>
+             <p className="text-white/50 text-[9px] uppercase font-mono tracking-[0.3em] text-center mb-10 truncate w-full px-4">
+               {college || "Independent Builder"}
+             </p>
+
+             <div className="w-full grid grid-cols-2 gap-4 mb-4">
+                <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
+                   <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">Verq Score</p>
+                   <p className="font-serif text-4xl font-bold text-white leading-none">
+                     {score}
+                   </p>
+                </div>
+                <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
+                   <p className="text-[8px] uppercase font-black tracking-widest text-[#A7D7C5] mb-2 group-hover/stat:text-white transition-colors">Top Stack</p>
+                   <p className="font-mono text-[10px] font-bold text-white uppercase tracking-tighter mt-1 truncate max-w-full">
+                     {topLanguage || "Fullstack"}
+                   </p>
+                </div>
+             </div>
+          </div>
+
+          {/* Card Footer / Holographic Strip */}
+          <div className="w-full mt-auto">
+            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-6" />
+            <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-[0.3em] text-white/30 px-1">
+               <span>Trust Mark 2.0</span>
+               <div className="flex items-center gap-1.5">
+                 <div className="w-1.5 h-1.5 rounded-full bg-[#0F52BA] animate-pulse" />
+                 <span>Verq Protocol</span>
+               </div>
+            </div>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="absolute bottom-6 left-0 right-0 text-center text-[10px] text-white/40 tracking-widest font-mono uppercase bg-black/20 py-2 border-y border-white/5 backdrop-blur-md">
-          india's verified builder network
+        {/* --- 4. GLASS REFLECTION --- */}
+        <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden opacity-20">
+           <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-tr from-transparent via-white/10 to-transparent rotate-45 transform translate-y-[-10%]" />
         </div>
       </div>
       
       {/* External Action Button */}
-      <button 
-        onClick={downloadCard}
-        disabled={downloading}
-        className="mt-6 flex items-center gap-2 bg-gradient-to-r from-[#0E0E0C] to-[#1A1A18] border border-black/10 text-white px-8 py-3.5 rounded-2xl text-sm font-semibold shadow-[0_8px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_30px_rgba(15,82,186,0.3)] hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
-      >
-        {downloading ? (
-          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-        ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-        )}
-        Download trading card
-      </button>
-      <p className="text-xs text-[#6A6A66] mt-3 max-w-[260px] text-center">
-        Export this card to natively share your Verq score on LinkedIn or Twitter.
-      </p>
+      <div className="mt-8 flex flex-col items-center gap-4">
+        <button 
+          onClick={downloadCard}
+          disabled={downloading}
+          className="group relative flex items-center gap-3 bg-[#0E0E0C] text-white px-10 py-4 rounded-2xl text-sm font-bold shadow-2xl hover:shadow-[#0F52BA]/30 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50"
+        >
+          {downloading ? (
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          )}
+          <span>Download Trading Card</span>
+          <div className="absolute inset-0 rounded-2xl border border-white/10 group-hover:border-white/20 transition-colors pointer-events-none" />
+        </button>
+
+        <p className="text-[9px] text-[#6A6A66] uppercase font-black tracking-[0.3em] max-w-[280px] text-center leading-relaxed">
+          Optimized for LinkedIn & X verified feed sharing
+        </p>
+      </div>
     </div>
   )
 }

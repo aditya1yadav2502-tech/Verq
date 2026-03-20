@@ -42,7 +42,7 @@ export default function RescoreButton({ githubUrl }: { githubUrl: string | null 
     <button
       onClick={handleRescore}
       disabled={loading}
-      className="flex-1 bg-[#0F52BA] text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-[#0a45a0] transition-colors disabled:opacity-50"
+      className="w-full bg-[#0F52BA] text-white text-sm font-semibold py-3 rounded-xl hover:bg-[#0a45a0] transition-all disabled:opacity-50 shadow-md active:scale-95"
     >
       {loading ? "Analyzing GitHub..." : "Re-score my GitHub"}
     </button>

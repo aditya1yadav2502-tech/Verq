@@ -259,7 +259,7 @@ export default async function DashboardPage() {
                     </div>
                     <div>
                       <h3 className="font-serif text-2xl font-bold text-[#0E0E0C] tracking-tight">Action Plan</h3>
-                      <p className="text-[#6A6A66] text-xs mt-1 font-medium italic">Personalized tactical steps to boost your Verq score.</p>
+                      <p className="text-[#6A6A66] text-xs mt-1 font-medium italic">Personalized tactical steps to boost your Verqify score.</p>
                     </div>
                   </div>
 

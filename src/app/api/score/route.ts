@@ -99,9 +99,18 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user || !user.email) {
-      return NextResponse.json({ error: "Sign in to generate your Verqify Score" }, { status: 401 })
-;
+      return NextResponse.json({ error: "Sign in to generate your Verqify Score" }, { status: 401 });
     }
+
+    // Fetch previous score to check for improvement
+    const { data: previousStudent } = await supabase
+      .from("students")
+      .select("verq_score, name")
+      .eq("email", user.email)
+      .single();
+
+    const previousScore = previousStudent?.verq_score || 0;
+    const isImprovement = scores.overall > previousScore && previousScore > 0;
 
     const { error: dbError } = await supabase
       .from("students")
@@ -126,6 +135,25 @@ export async function POST(request: NextRequest) {
         scores,
         warning: "Scores calculated but failed to save to database",
       });
+    }
+
+    // Send alerts to companies tracking this candidate if score improved
+    if (isImprovement) {
+      const { data: bookmarks } = await supabase
+        .from("bookmarks")
+        .select("company_email")
+        .eq("student_email", user.email);
+
+      if (bookmarks && bookmarks.length > 0) {
+        const notificationsToInsert = bookmarks.map(b => ({
+          student_email: user.email,
+          company_email: b.company_email,
+          type: "SCORE_IMPROVED",
+          message: `${previousStudent?.name || "A shortlisted builder"} just improved their Verqify Score to ${scores.overall} (was ${previousScore})!`
+        }));
+
+        await supabase.from("notifications").insert(notificationsToInsert);
+      }
     }
 
     return NextResponse.json({ scores });

@@ -74,7 +74,7 @@ export default function SignupPage() {
         })
         const data = await res.json()
         if (data.scores) {
-          setMessage(`Your Verq score: ${data.scores.overall}/100 🎉 Redirecting...`)
+          setMessage(`Your Verqify score: ${data.scores.overall}/100 🎉 Redirecting...`)
           setTimeout(() => router.push("/dashboard"), 1500)
         } else {
           setMessage("Account created! Redirecting...")
@@ -195,7 +195,7 @@ export default function SignupPage() {
                 className="w-full bg-[#FAFAFA] border border-black/5 rounded-2xl px-4 py-3.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:ring-2 focus:ring-[#0F52BA]/20 focus:border-[#0F52BA]/30 hover:bg-white transition-all inset-shadow-sm"
               />
               <p className="text-[10px] text-[#9A9A95] mt-2 pl-1">
-                This is what Verq scores — make sure it is accurate.
+                This is what Verqify scores — make sure it is accurate.
               </p>
             </div>
           </div>

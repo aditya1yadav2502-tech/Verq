@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar"
 
 export const metadata = {
-  title: "Leaderboard — Verqify",
+  title: "Leaderboard",
   description: "Leaderboard coming soon.",
 }
 

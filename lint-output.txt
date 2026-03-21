@@ -1,0 +1,85 @@
+
+> verq@0.1.0 lint
+> eslint
+
+
+/Users/adityayadav/verq/check_db.js
+  10:17  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/adityayadav/verq/src/app/api/bookmarks/route.ts
+  18:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/adityayadav/verq/src/app/company/dashboard/page.tsx
+   73:12  warning  'getScoreColor' is defined but never used  @typescript-eslint/no-unused-vars
+  123:63  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+/Users/adityayadav/verq/src/app/company/signup/page.tsx
+  88:48  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/adityayadav/verq/src/app/dashboard/page.tsx
+    2:10   warning  'redirect' is defined but never used          @typescript-eslint/no-unused-vars
+   22:9    warning  'isGuest' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   43:67   error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   44:29   error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  167:61   error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  267:87   error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  290:57   error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  296:102  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  304:44   error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/adityayadav/verq/src/app/explore/ExploreClient.tsx
+  115:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  116:71  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  180:62  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/adityayadav/verq/src/app/s/[username]/page.tsx
+   67:66  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   68:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  269:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  275:98  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  283:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/adityayadav/verq/src/app/signup/page.tsx
+  42:19  warning  'authData' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/adityayadav/verq/src/components/FilterSidebar.tsx
+    3:10  warning  'useState' is defined but never used      @typescript-eslint/no-unused-vars
+  104:59  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/adityayadav/verq/src/components/QuickViewModal.tsx
+   3:8   warning  'Link' is defined but never used                                 @typescript-eslint/no-unused-vars
+   7:11  warning  'Repository' is defined but never used                           @typescript-eslint/no-unused-vars
+  28:17  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  48:67  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  49:29  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  95:96  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/adityayadav/verq/src/components/RescoreButton.tsx
+  32:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  32:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/adityayadav/verq/src/components/SalaryMap.tsx
+  35:31  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/Users/adityayadav/verq/src/components/SalaryMap.tsx:35:31
+  33 |         {[...Array(20)].map((_, i) => {
+  34 |           const isActive = (i / 20) * 100 <= progress
+> 35 |           const height = 20 + Math.random() * 60 + (i * 2) 
+     |                               ^^^^^^^^^^^^^ Cannot call impure function
+  36 |           return (
+  37 |             <div 
+  38 |               key={i}   react-hooks/purity
+
+/Users/adityayadav/verq/src/components/ShareModal.tsx
+  6:73  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/adityayadav/verq/src/middleware.ts
+  37:9  warning  'isPublicRoute' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/adityayadav/verq/test-github.js
+  1:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+✖ 37 problems (27 errors, 10 warnings)
+

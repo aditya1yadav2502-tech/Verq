@@ -1,11 +1,35 @@
+"use client"
+
 import Navbar from "@/components/Navbar"
 import Link from "next/link"
 import PulseFeed from "@/components/PulseFeed"
+import { Suspense, useState, useEffect } from "react"
 
 export default function Home() {
+  const [viewMode, setViewMode] = useState<"builder" | "company">("builder")
+
+  useEffect(() => {
+    const saved = localStorage.getItem("verq_view_mode")
+    if (saved === "company" || saved === "builder") {
+      setViewMode(saved)
+    }
+
+    const handleStorage = () => {
+      const mode = localStorage.getItem("verq_view_mode")
+      if (mode === "company" || mode === "builder") {
+        setViewMode(mode)
+      }
+    }
+
+    window.addEventListener("view_mode_changed", handleStorage)
+    return () => window.removeEventListener("view_mode_changed", handleStorage)
+  }, [])
+
   return (
     <main className="min-h-screen bg-[#FAFAFA] text-[#0E0E0C] overflow-hidden selection:bg-[#0F52BA]/20">
-      <Navbar />
+      <Suspense fallback={<div className="h-16 w-full" />}>
+        <Navbar />
+      </Suspense>
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 sm:pt-48 sm:pb-32 px-6 overflow-hidden">
@@ -19,34 +43,66 @@ export default function Home() {
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex flex-col items-center text-center animate-fade-in">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-black/5 shadow-sm text-sm font-medium text-[#0E0E0C] mb-8 hover:shadow-md transition-shadow">
-              <span className="flex h-2 w-2 rounded-full bg-[#0A7250]"></span>
-              India&apos;s first verified builder platform
+              <span className={`flex h-2 w-2 rounded-full ${viewMode === "builder" ? "bg-[#0A7250]" : "bg-[#0F52BA]"}`}></span>
+              {viewMode === "builder" ? "India's first verified builder platform" : "Source the top 1% of student developers"}
             </div>
             
             <h1 className="font-serif text-5xl sm:text-7xl lg:text-[5rem] tracking-tight leading-[1.1] mb-6 drop-shadow-sm">
-              Companies find you.<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0E0E0C] via-[#3B3B38] to-[#6A6A66]">
-                Not the other way around.
-              </span>
+              {viewMode === "builder" ? (
+                <>
+                  Companies find you.<br/>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0E0E0C] via-[#3B3B38] to-[#6A6A66]">
+                    Not the other way around.
+                  </span>
+                </>
+              ) : (
+                <>
+                  Stop reading resumes.<br/>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0E0E0C] via-[#3B3B38] to-[#6A6A66]">
+                    Start evaluating code.
+                  </span>
+                </>
+              )}
             </h1>
             
             <p className="text-lg sm:text-xl text-[#6A6A66] mb-10 leading-relaxed max-w-2xl mx-auto">
-              Build real projects. Get verified by the Verqify engine. Let top companies discover your talent instantly — no resumes, no ATS, no silence.
+              {viewMode === "builder" 
+                ? "Build real projects. Get verified by the Verqify engine. Let top companies discover your talent instantly — no resumes, no ATS, no silence." 
+                : "The Verqify engine analyzes GitHub repositories natively across 5 specific dimensions. Giving recruiters a mathematically proven shortlist."}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full sm:w-auto">
-              <Link
-                href="/signup"
-                className="w-full sm:w-auto px-8 py-4 bg-[#0E0E0C] text-white text-base font-semibold rounded-full shadow-[0_0_40px_rgba(15,82,186,0.3)] hover:shadow-[0_0_60px_rgba(15,82,186,0.5)] hover:-translate-y-1 transition-all duration-300 border border-white/10"
-              >
-                Get your Verqify score
-              </Link>
-              <Link
-                href="/explore"
-                className="w-full sm:w-auto px-8 py-4 bg-white/60 backdrop-blur-md border border-black/10 text-[#0E0E0C] text-base font-semibold rounded-full hover:bg-white hover:border-black/20 hover:-translate-y-1 transition-all duration-300"
-              >
-                Explore builders
-              </Link>
+              {viewMode === "builder" ? (
+                <>
+                  <Link
+                    href="/signup"
+                    className="w-full sm:w-auto px-8 py-4 bg-[#0E0E0C] text-white text-base font-semibold rounded-full shadow-[0_0_40px_rgba(15,82,186,0.3)] hover:shadow-[0_0_60px_rgba(15,82,186,0.5)] hover:-translate-y-1 transition-all duration-300 border border-white/10"
+                  >
+                    Get your Verqify score
+                  </Link>
+                  <Link
+                    href="/explore"
+                    className="w-full sm:w-auto px-8 py-4 bg-white/60 backdrop-blur-md border border-black/10 text-[#0E0E0C] text-base font-semibold rounded-full hover:bg-white hover:border-black/20 hover:-translate-y-1 transition-all duration-300"
+                  >
+                    Explore builders
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/company/signup"
+                    className="w-full sm:w-auto px-8 py-4 bg-[#0A7250] text-white text-base font-semibold rounded-full shadow-[0_0_40px_rgba(10,114,80,0.3)] hover:shadow-[0_0_60px_rgba(10,114,80,0.5)] hover:-translate-y-1 transition-all duration-300 border border-white/10"
+                  >
+                    Hire Top Talent Now
+                  </Link>
+                  <Link
+                    href="/explore"
+                    className="w-full sm:w-auto px-8 py-4 bg-white/60 backdrop-blur-md border border-black/10 text-[#0E0E0C] text-base font-semibold rounded-full hover:bg-white hover:border-black/20 hover:-translate-y-1 transition-all duration-300"
+                  >
+                    View ATS Database
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

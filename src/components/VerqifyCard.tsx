@@ -7,12 +7,22 @@ import VerifiedBadge from "./VerifiedBadge"
 interface VerqifyCardProps {
   name: string
   score: number | string
-  college: string
+  college?: string
   topLanguage?: string
-  avatar: string
+  avatar?: string
+  rank?: string
+  stats?: { label: string; value: string }[]
 }
 
-export default function VerqifyCard({ name, score, college, topLanguage, avatar }: VerqifyCardProps) {
+export default function VerqifyCard({ 
+  name, 
+  score, 
+  college, 
+  topLanguage, 
+  avatar = name.charAt(0).toUpperCase(),
+  rank,
+  stats
+}: VerqifyCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [downloading, setDownloading] = useState(false)
 
@@ -110,23 +120,42 @@ export default function VerqifyCard({ name, score, college, topLanguage, avatar 
              <h2 className="font-serif text-3xl font-black text-white text-center leading-tight mb-1 truncate w-full px-2" style={{ textShadow: "0 4px 12px rgba(0,0,0,0.4)" }}>
                {name}
              </h2>
-             <p className="text-white/50 text-[9px] uppercase font-mono tracking-[0.3em] text-center mb-10 truncate w-full px-4">
+             <p className="text-white/50 text-[9px] uppercase font-mono tracking-[0.3em] text-center mb-6 truncate w-full px-4">
                {college || "Independent Builder"}
              </p>
 
+             {rank && (
+               <div className="bg-white/10 border border-white/10 px-3 py-1 rounded-full mb-6">
+                 <span className="text-[10px] font-black uppercase tracking-widest text-[#BFD4FF]">{rank}</span>
+               </div>
+             )}
+
              <div className="w-full grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
-                   <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">Verqify Score</p>
-                   <p className="font-serif text-4xl font-bold text-white leading-none">
-                     {score}
-                   </p>
-                </div>
-                <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
-                   <p className="text-[8px] uppercase font-black tracking-widest text-[#A7D7C5] mb-2 group-hover/stat:text-white transition-colors">Top Stack</p>
-                   <p className="font-mono text-[10px] font-bold text-white uppercase tracking-tighter mt-1 truncate max-w-full">
-                     {topLanguage || "Fullstack"}
-                   </p>
-                </div>
+                {stats ? (
+                  stats.map((s, i) => (
+                    <div key={i} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
+                       <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">{s.label}</p>
+                       <p className="font-serif text-2xl font-bold text-white leading-none">
+                         {s.value}
+                       </p>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
+                      <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">Verqify Score</p>
+                      <p className="font-serif text-4xl font-bold text-white leading-none">
+                        {score}
+                      </p>
+                    </div>
+                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
+                      <p className="text-[8px] uppercase font-black tracking-widest text-[#A7D7C5] mb-2 group-hover/stat:text-white transition-colors">Top Stack</p>
+                      <p className="font-mono text-[10px] font-bold text-white uppercase tracking-tighter mt-1 truncate max-w-full">
+                        {topLanguage || "Fullstack"}
+                      </p>
+                    </div>
+                  </>
+                )}
              </div>
           </div>
 

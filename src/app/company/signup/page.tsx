@@ -77,7 +77,7 @@ export default function CompanySignupPage() {
               <path d="M5 9.5H11" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
             </svg>
           </div>
-          <span className="font-serif text-2xl font-bold text-[#0E0E0C] tracking-tight">verq for companies</span>
+          <span className="font-serif text-2xl font-bold text-[#0E0E0C] tracking-tight">Verqify for companies</span>
         </Link>
 
         <div className="text-center mb-8">
@@ -138,7 +138,7 @@ export default function CompanySignupPage() {
             disabled={loading || !companyName || !email || !password}
             className="w-full bg-[#0E0E0C] text-white text-sm font-semibold py-4 rounded-xl shadow-[0_4px_14px_rgb(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
           >
-            {loading ? "Creating account..." : "Create company account"}
+            {loading ? "Creating account..." : "Create Verqify account"}
           </button>
         </form>
 

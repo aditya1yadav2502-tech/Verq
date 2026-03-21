@@ -4,6 +4,10 @@ import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
 import Navbar from "@/components/Navbar"
 import PulseFeed from "@/components/PulseFeed"
+import FilterSidebar from "@/components/FilterSidebar"
+import SalaryMap from "@/components/SalaryMap"
+import QuickViewModal from "@/components/QuickViewModal"
+import PricingModal from "@/components/PricingModal"
 
 type Student = {
   name: string
@@ -16,6 +20,8 @@ type Student = {
   score_commit_consistency: number
   score_documentation: number
   score_deployment: number
+  languages?: { name: string; bytes: number }[]
+  top_repos?: { name: string; description: string; url: string; stars: number; language: string }[]
 }
 
 const INTENT_SIGNALS = [
@@ -36,9 +42,20 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
   const [minScore, setMinScore] = useState<number>(0)
   const [sortBy, setSortBy] = useState<"overall" | "quality" | "complexity">("overall")
   
-  // Dummy filters for UI Mock
   const [activeStack, setActiveStack] = useState("All")
   const [activeAvailability, setActiveAvailability] = useState("All")
+  
+  const [dimensionFilters, setDimensionFilters] = useState<Record<string, number>>({
+    score_code_quality: 0,
+    score_project_complexity: 0,
+    score_commit_consistency: 0,
+    score_documentation: 0,
+    score_deployment: 0,
+  })
+
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false)
+  const [isPricingOpen, setIsPricingOpen] = useState(false)
 
   const [isCompany, setIsCompany] = useState(false)
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set())
@@ -52,6 +69,10 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
       })
       .catch(console.error)
   }, [])
+
+  function setDimensionFilter(key: string, val: number) {
+    setDimensionFilters(prev => ({ ...prev, [key]: val }))
+  }
 
   async function toggleBookmark(e: React.MouseEvent, email: string) {
     e.preventDefault() 
@@ -79,8 +100,24 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
         const matchesSearch =
           s.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           s.college?.toLowerCase().includes(searchQuery.toLowerCase())
+        
         const matchesScore = s.verq_score >= minScore
-        return matchesSearch && matchesScore
+        
+        // Multi-dimension filtering
+        const matchesDimensions = 
+          s.score_code_quality >= dimensionFilters.score_code_quality &&
+          s.score_project_complexity >= dimensionFilters.score_project_complexity &&
+          s.score_commit_consistency >= dimensionFilters.score_commit_consistency &&
+          s.score_documentation >= dimensionFilters.score_documentation &&
+          s.score_deployment >= dimensionFilters.score_deployment
+
+        const matchesStack = activeStack === "All" || 
+          (s.languages && (s.languages as any[]).some(l => l.name.toLowerCase() === activeStack.toLowerCase())) ||
+          (activeStack === "AI/ML" && (s.languages && (s.languages as any[]).some(l => ["python", "c++", "cuda"].includes(l.name.toLowerCase()))))
+
+        const matchesAvail = activeAvailability === "All" || getMockIntent(s.name) === activeAvailability
+
+        return matchesSearch && matchesScore && matchesDimensions && matchesStack && matchesAvail
       })
       .sort((a, b) => {
         if (sortBy === "overall") return b.verq_score - a.verq_score
@@ -88,7 +125,7 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
         if (sortBy === "complexity") return b.score_project_complexity - a.score_project_complexity
         return 0
       })
-  }, [initialStudents, searchQuery, minScore, sortBy])
+  }, [initialStudents, searchQuery, minScore, sortBy, dimensionFilters, activeStack, activeAvailability])
 
   function getScoreColor(score: number) {
     if (score >= 70) return "text-[#0A7250] bg-[#E4F4EE]/50 border-[#0A7250]/20"
@@ -106,89 +143,24 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
     <main className="min-h-screen bg-[#FAFAFA] pt-24 pb-20 selection:bg-[#0F52BA]/20">
       <Navbar />
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative grid grid-cols-1 lg:grid-cols-[280px_1fr_320px] gap-8">
+      <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 relative grid grid-cols-1 lg:grid-cols-[300px_1fr_340px] gap-10">
         
         {/* Decorative background blur */}
-        <div className="absolute top-0 right-10 w-96 h-96 bg-[#0F52BA]/10 rounded-full filter blur-[100px] pointer-events-none" />
+        <div className="absolute top-0 right-10 w-96 h-96 bg-[#0F52BA]/05 rounded-full filter blur-[100px] pointer-events-none" />
 
-        {/* Left Sidebar: Filters */}
-        <aside className="space-y-8 animate-slide-up sticky top-28 h-fit hidden lg:block">
-          <div className="mb-4">
-            <h1 className="font-serif text-3xl text-[#0E0E0C] font-bold tracking-tight">Terminal</h1>
-            <p className="text-sm text-[#6A6A66] mt-2">Find elite verified builders</p>
-          </div>
-
-          <div className="space-y-6 bg-white/70 backdrop-blur-xl border border-black/5 rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <div>
-              <label className="block text-[10px] font-mono font-medium text-[#9A9A95] mb-2 uppercase tracking-widest pl-1">Search</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Name or college"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#FAFAFA] border border-black/5 rounded-2xl pl-10 pr-3 py-2.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:ring-2 focus:ring-[#0F52BA]/20 focus:border-[#0F52BA]/30 transition-all hover:bg-white"
-                />
-                <svg className="absolute left-3 top-3 w-4 h-4 text-[#9A9A95]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-mono font-medium text-[#9A9A95] mb-2 uppercase tracking-widest pl-1">Tech Stack</label>
-              <div className="flex flex-wrap gap-2">
-                {["All", "React", "Python", "Rust", "Go", "Solidity"].map(stack => (
-                  <button 
-                    key={stack}
-                    onClick={() => setActiveStack(stack)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      activeStack === stack 
-                        ? "bg-[#0E0E0C] text-white shadow-md" 
-                        : "bg-[#FAFAFA] text-[#6A6A66] border border-black/5 hover:bg-white hover:text-[#0E0E0C]"
-                    }`}
-                  >
-                    {stack}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-mono font-medium text-[#9A9A95] mb-2 uppercase tracking-widest pl-1">Min Score</label>
-              <select
-                value={minScore}
-                onChange={(e) => setMinScore(Number(e.target.value))}
-                className="w-full bg-[#FAFAFA] border border-black/5 rounded-2xl px-3 py-2.5 text-sm text-[#0E0E0C] outline-none focus:ring-2 focus:ring-[#0F52BA]/20 focus:border-[#0F52BA]/30 transition-all hover:bg-white appearance-none cursor-pointer"
-              >
-                <option value="0">All Scores</option>
-                <option value="50">50+ (Top 40%)</option>
-                <option value="70">70+ (Top 15%)</option>
-                <option value="90">90+ (Top 1%)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-mono font-medium text-[#9A9A95] mb-2 uppercase tracking-widest pl-1">Availability</label>
-              <div className="flex flex-col gap-2">
-                {["All", "Actively interviewing", "Open to roles", "Not looking"].map(avail => (
-                  <button 
-                    key={avail}
-                    onClick={() => setActiveAvailability(avail)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all ${
-                      activeAvailability === avail 
-                        ? "bg-[#0A7250]/10 text-[#0A7250] font-semibold" 
-                        : "text-[#6A6A66] hover:bg-black/5"
-                    }`}
-                  >
-                    <div className={`w-2 h-2 rounded-full ${activeAvailability === avail ? 'bg-[#0A7250]' : 'bg-[#E2E1DC]'}`} />
-                    {avail}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </aside>
+        {/* Left Sidebar: Advanced Filters */}
+        <FilterSidebar 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          minScore={minScore}
+          setMinScore={setMinScore}
+          activeStack={activeStack}
+          setActiveStack={setActiveStack}
+          activeAvailability={activeAvailability}
+          setActiveAvailability={setActiveAvailability}
+          dimensionFilters={dimensionFilters}
+          setDimensionFilter={setDimensionFilter}
+        />
 
         {/* Middle Column: Results */}
         <section className="animate-slide-up relative z-10" style={{ animationDelay: '0.1s' }}>
@@ -258,10 +230,20 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
                           </span>
                         </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-base font-bold text-[#0E0E0C] group-hover:text-[#0F52BA] transition-colors truncate">
-                          {student.name}
-                        </p>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                           <p className="text-base font-bold text-[#0E0E0C] group-hover:text-[#0F52BA] transition-colors truncate">
+                            {student.name}
+                          </p>
+                          <div className="flex gap-1" title="Industry Verified">
+                             <div className="w-4 h-4 bg-[#0F52BA]/10 rounded-full flex items-center justify-center border border-[#0F52BA]/20">
+                                <span className="text-[8px]">📹</span>
+                             </div>
+                             <div className="w-4 h-4 bg-[#0A7250]/10 rounded-full flex items-center justify-center border border-[#0A7250]/20">
+                                <span className="text-[8px]">📱</span>
+                             </div>
+                          </div>
+                        </div>
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#0A7250] animate-pulse"></span>
                           <p className="text-[11px] font-medium text-[#0A7250] truncate">
@@ -269,10 +251,50 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
                           </p>
                         </div>
                       </div>
+
+                      {/* Contact Blur Paywall */}
+                      <div className="hidden sm:flex items-center gap-2 bg-[#FAFAFA] border border-black/5 rounded-xl px-3 py-1.5 relative group/blur cursor-pointer" onClick={() => setIsPricingOpen(true)}>
+                         <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] rounded-xl z-10 flex items-center justify-center opacity-0 group-hover/blur:opacity-100 transition-opacity">
+                            <span className="text-[9px] font-black uppercase text-[#0F52BA] tracking-widest bg-white shadow-sm px-2 py-0.5 rounded-md">Unlock Contact</span>
+                         </div>
+                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6A6A66" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                         <span className="text-xs font-mono text-[#6A6A66] blur-[4px] select-none">
+                           hired@candidate.com
+                         </span>
+                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2.5" className="ml-1"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                      </div>
                     </div>
                     
-                    <div className={`text-sm font-mono font-bold px-2 py-1 rounded-lg border shadow-sm ${getScoreColor(student.verq_score)}`}>
-                      {student.verq_score}
+                    <div className="flex flex-col items-end gap-2">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={(e) => toggleBookmark(e, student.email)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            bookmarks.has(student.email)
+                              ? "bg-red-50 text-red-500 border border-red-200 shadow-sm"
+                              : "bg-[#FAFAFA] text-[#6A6A66] border border-black/5 hover:bg-white hover:border-red-200 hover:text-red-500"
+                          }`}
+                          title="Save Profile - Notifies builder"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill={bookmarks.has(student.email) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                          <span className="hidden sm:inline-block tracking-wide">
+                            {bookmarks.has(student.email) ? "Saved" : "Save"}
+                          </span>
+                        </button>
+                        <div className={`text-sm font-mono font-bold px-2 py-1 rounded-lg border shadow-sm ${getScoreColor(student.verq_score)}`}>
+                          {student.verq_score}
+                        </div>
+                      </div>
+                      <button 
+                        onClick={(e) => {
+                          e.preventDefault()
+                          setSelectedStudent(student)
+                          setIsQuickViewOpen(true)
+                        }}
+                        className="text-[10px] font-black uppercase tracking-widest text-[#6A6A66] hover:text-[#0F52BA] transition-colors bg-black/5 px-2 py-1 rounded-md"
+                      >
+                        Quick View
+                      </button>
                     </div>
                   </div>
 
@@ -311,12 +333,29 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
           )}
         </section>
 
-        {/* Right Sidebar: Pulse Feed */}
-        <aside className="animate-slide-up sticky top-28 h-[600px] hidden lg:block" style={{ animationDelay: '0.2s' }}>
+        {/* Right Sidebar: Market Insights & Pulse */}
+        <aside className="animate-slide-up sticky top-28 h-fit hidden lg:block space-y-8" style={{ animationDelay: '0.2s' }}>
+          {filteredStudents[0] && (
+            <SalaryMap score={filteredStudents[0].verq_score} />
+          )}
           <PulseFeed />
         </aside>
 
       </div>
+
+      {selectedStudent && (
+        <QuickViewModal 
+          isOpen={isQuickViewOpen}
+          onClose={() => setIsQuickViewOpen(false)}
+          student={selectedStudent}
+          onUnlockContact={() => {
+            setIsQuickViewOpen(false)
+            setIsPricingOpen(true)
+          }}
+        />
+      )}
+
+      <PricingModal isOpen={isPricingOpen} onClose={() => setIsPricingOpen(false)} />
     </main>
   )
 }

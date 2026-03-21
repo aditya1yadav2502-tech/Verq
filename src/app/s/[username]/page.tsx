@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: PageProps) {
   const { username } = await params
   const name = decodeURIComponent(username).trim()
   return {
-    title: `${name} — Verq Profile`,
-    description: `View ${name}'s verified builder profile and Verq score.`,
+    title: `${name} — Verqify Portfolio`,
+    description: `View ${name}'s verified builder profile and Verqify score.`,
   }
 }
 
@@ -41,7 +41,7 @@ export default async function StudentProfile({ params }: PageProps) {
               <span className="font-serif text-3xl text-[#9A9A95]">?</span>
             </div>
             <p className="font-serif text-3xl text-[#0E0E0C] mb-3">Builder not found</p>
-            <p className="text-[#6A6A66] mb-8 max-w-sm mx-auto">This profile doesn&apos;t exist yet or they haven&apos;t generated their Verq score.</p>
+            <p className="text-[#6A6A66] mb-8 max-w-sm mx-auto">This profile doesn&apos;t exist yet or they haven&apos;t generated their Verqify score.</p>
             <Link
               href="/leaderboard"
               className="inline-block bg-[#0E0E0C] text-white px-6 py-3 rounded-full hover:bg-[#3B3B38] transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
@@ -121,7 +121,7 @@ export default async function StudentProfile({ params }: PageProps) {
               <div className="font-serif text-5xl sm:text-6xl text-[#0E0E0C] font-bold mb-1 tracking-tighter">
                 {isScored ? student.verq_score : "--"}
               </div>
-              <div className="text-xs text-[#9A9A95] font-mono tracking-widest uppercase mb-3">Verq Score</div>
+              <div className="text-xs text-[#9A9A95] font-mono tracking-widest uppercase mb-3">Verqify Score</div>
               {isScored ? (
                 <div className="flex flex-col items-center md:items-end gap-2 mt-2">
                   <div className="text-sm font-semibold text-[#0E0E0C]">

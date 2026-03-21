@@ -20,7 +20,8 @@ export default function RescoreButton({ githubUrl }: { githubUrl: string | null 
       const data = await response.json()
       
       if (!response.ok) {
-        alert("Error: " + (data.error || data.warning || "Something went wrong"))
+        const errorText = data.error || data.warning || "Something went wrong";
+        alert(`Scoring Failed: ${errorText}`);
         return
       }
 

@@ -157,11 +157,12 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ scores });
-  } catch (error) {
-    console.error("Scoring error:", error);
+  } catch (error: any) {
+    console.error("Critical Scoring failure:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: `Internal server error: ${error.message || "Unknown error"}` },
       { status: 500 }
     );
   }
+
 }

@@ -3,9 +3,23 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
 
 export default function RoleSelectionPage() {
   const router = useRouter()
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }: { data: { user: any } }) => {
+      const user = data.user
+      if (user) {
+        const role = user.user_metadata?.role || "builder"
+        localStorage.setItem("verqify_view_mode", role)
+        window.dispatchEvent(new Event("view_mode_changed"))
+        router.push(role === "company" ? "/company/dashboard" : "/dashboard")
+      }
+    })
+  }, [router])
 
   const selectRole = (role: "builder" | "company") => {
     localStorage.setItem("verqify_view_mode", role)

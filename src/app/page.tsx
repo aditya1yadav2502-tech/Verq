@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar"
 import Link from "next/link"
 import PulseFeed from "@/components/PulseFeed"
 import { Suspense, useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 
 export default function Home() {
@@ -11,15 +12,31 @@ export default function Home() {
   const router = useRouter()
 
   useEffect(() => {
-    const saved = localStorage.getItem("verqify_view_mode")
-    if (!saved) {
-      router.push("/role-selection")
-      return
-    }
+    // 1. Initial auth and role check
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }: { data: { user: any } }) => {
+      const user = data.user
+      const saved = localStorage.getItem("verqify_view_mode")
 
-    if (saved === "company" || saved === "builder") {
-      setViewMode(saved)
-    }
+      // If logged in, skip role selection and use account role
+      if (user) {
+        const role = user.user_metadata?.role || "builder"
+        setViewMode(role as "builder" | "company")
+        localStorage.setItem("verqify_view_mode", role)
+        return
+      }
+
+      // If not logged in and no role chosen, go to role-selection
+      if (!saved) {
+        router.push("/role-selection")
+        return
+      }
+
+      // If not logged in but role exists in storage
+      if (saved === "company" || saved === "builder") {
+        setViewMode(saved)
+      }
+    })
 
     const handleStorage = () => {
       const mode = localStorage.getItem("verqify_view_mode")
@@ -31,6 +48,7 @@ export default function Home() {
     window.addEventListener("view_mode_changed", handleStorage)
     return () => window.removeEventListener("view_mode_changed", handleStorage)
   }, [router])
+
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] text-[#0E0E0C] overflow-hidden selection:bg-[#0F52BA]/20">

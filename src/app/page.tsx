@@ -4,7 +4,6 @@ import Navbar from "@/components/Navbar"
 import Link from "next/link"
 import PulseFeed from "@/components/PulseFeed"
 import { Suspense, useState, useEffect } from "react"
-import RoleSelectionOverlay from "@/components/RoleSelectionOverlay"
 import { useRouter } from "next/navigation"
 
 export default function Home() {
@@ -12,7 +11,7 @@ export default function Home() {
   const router = useRouter()
 
   useEffect(() => {
-    const saved = localStorage.getItem("verq_view_mode")
+    const saved = localStorage.getItem("verqify_view_mode")
     if (!saved) {
       router.push("/role-selection")
       return
@@ -23,7 +22,7 @@ export default function Home() {
     }
 
     const handleStorage = () => {
-      const mode = localStorage.getItem("verq_view_mode")
+      const mode = localStorage.getItem("verqify_view_mode")
       if (mode === "company" || mode === "builder") {
         setViewMode(mode)
       }

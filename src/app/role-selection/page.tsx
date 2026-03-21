@@ -8,7 +8,7 @@ export default function RoleSelectionPage() {
   const router = useRouter()
 
   const selectRole = (role: "builder" | "company") => {
-    localStorage.setItem("verq_view_mode", role)
+    localStorage.setItem("verqify_view_mode", role)
     window.dispatchEvent(new Event("view_mode_changed"))
     router.push("/")
   }

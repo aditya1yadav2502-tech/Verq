@@ -19,12 +19,12 @@ function NavbarContent() {
 
   useEffect(() => {
     // Initial load
-    const saved = localStorage.getItem("verq_view_mode")
+    const saved = localStorage.getItem("verqify_view_mode")
     setLocalViewMode(saved)
 
     // Listen for changes
     const handleStorage = () => {
-      const mode = localStorage.getItem("verq_view_mode")
+      const mode = localStorage.getItem("verqify_view_mode")
       setLocalViewMode(mode)
     }
 

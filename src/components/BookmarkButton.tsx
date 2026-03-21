@@ -14,7 +14,7 @@ export default function BookmarkButton({ studentEmail }: { studentEmail: string 
   useEffect(() => {
     setMounted(true)
     const handleSync = () => {
-      const mode = localStorage.getItem("verq_view_mode")
+      const mode = localStorage.getItem("verqify_view_mode")
       if (mode) setViewMode(mode)
     }
 

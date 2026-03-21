@@ -9,7 +9,7 @@ Students build real projects, get verified by AI, receive a Verqify score, and g
 Next.js 14 · Supabase · TypeScript · Tailwind CSS · Claude API
 
 ## Live
-https://verq-two.vercel.app
+https://verqify.vercel.app
 
 ## Status
 Active development — building in public.

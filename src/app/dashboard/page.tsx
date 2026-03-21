@@ -16,17 +16,19 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Strict Dashboard Guard: Only logged in students can see the dashboard
+  if (!user) {
+    redirect("/signin")
+  }
+
   // Strict Dashboard Guard: Redirect companies to the company dashboard
   if (user?.user_metadata?.role === "company") {
     redirect("/company/dashboard")
   }
 
-  // Use a demo email for "Public Preview" mode if no user is logged in
-  const demoEmail = "aditya.24gcebelvlsi054@galgotiacollege.edu"
-  const currentUserEmail = user?.email || demoEmail
-  const isGuest = !user
+  const currentUserEmail = user.email
+  const userName = user.user_metadata?.name || user.email?.split("@")[0] || "Builder"
 
-  const userName = user?.user_metadata?.name || user?.email?.split("@")[0] || "Aditya"
 
   // Fetch student record
   const { data: student } = await supabase

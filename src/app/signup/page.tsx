@@ -22,7 +22,7 @@ export default function SignupPage() {
     await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `${location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     })
   }

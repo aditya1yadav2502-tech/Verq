@@ -85,7 +85,7 @@ export default function EditProfilePage() {
               <path d="M5 9.5H11" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
             </svg>
           </div>
-          <span className="font-serif text-lg font-medium text-[#0E0E0C]">verq</span>
+          <span className="font-serif text-lg font-bold text-[#0E0E0C] tracking-tight">Verqify</span>
         </Link>
         <Link href="/dashboard" className="text-sm text-[#6A6A66] hover:text-[#0E0E0C] transition-colors">
           ← Back to dashboard

@@ -82,7 +82,7 @@ export async function middleware(request: NextRequest) {
   const host = request.headers.get("host")
   if (host === "verq-two.vercel.app") {
     const url = request.nextUrl.clone()
-    url.host = "verqify-l43l29vq7-aditya1yadav2502-techs-projects.vercel.app"
+    url.host = "verqify.vercel.app"
     url.protocol = "https"
     return NextResponse.redirect(url, { status: 301 })
   }

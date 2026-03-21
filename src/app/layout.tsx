@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "Build real projects. Get verified by AI. Let companies discover you.",
     type: "website",
-    url: "https://verqify-l43l29vq7-aditya1yadav2502-techs-projects.vercel.app/",
+    url: "https://verqify.vercel.app/",
     siteName: "Verqify",
   },
   twitter: {

@@ -53,7 +53,11 @@ function NavbarContent() {
         {/* Subtle top edge highlight */}
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent" />
 
-        <Link href="/" title="Home" className="flex items-center gap-2 relative z-10 transition-transform hover:scale-105 mr-2 sm:mr-4 shrink-0">
+        <Link 
+          href={user || isCompanyPreview ? "/" : "#"} 
+          title={user || isCompanyPreview ? "Home" : ""} 
+          className={`flex items-center gap-2 relative z-10 mr-2 sm:mr-4 shrink-0 ${user || isCompanyPreview ? "transition-transform hover:scale-105 cursor-pointer" : "cursor-default"}`}
+        >
           <div className="w-8 h-8 bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] rounded-full flex items-center justify-center shadow-inner shrink-0">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="drop-shadow-sm">
               <path d="M3 13L8 3L13 13" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -62,6 +66,7 @@ function NavbarContent() {
           </div>
           <span className="font-serif text-lg font-bold text-[#0E0E0C] tracking-tight hidden md:block">Verqify</span>
         </Link>
+
 
         {/* The switch gear has been removed. Experience is now role-based. */}
         <div className="flex-1 flex justify-center" />

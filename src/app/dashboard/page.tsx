@@ -16,6 +16,11 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Strict Dashboard Guard: Redirect companies to the company dashboard
+  if (user?.user_metadata?.role === "company") {
+    redirect("/company/dashboard")
+  }
+
   // Use a demo email for "Public Preview" mode if no user is logged in
   const demoEmail = "aditya.24gcebelvlsi054@galgotiacollege.edu"
   const currentUserEmail = user?.email || demoEmail

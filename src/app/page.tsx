@@ -4,12 +4,20 @@ import Navbar from "@/components/Navbar"
 import Link from "next/link"
 import PulseFeed from "@/components/PulseFeed"
 import { Suspense, useState, useEffect } from "react"
+import RoleSelectionOverlay from "@/components/RoleSelectionOverlay"
+import { useRouter } from "next/navigation"
 
 export default function Home() {
   const [viewMode, setViewMode] = useState<"builder" | "company">("builder")
+  const router = useRouter()
 
   useEffect(() => {
     const saved = localStorage.getItem("verq_view_mode")
+    if (!saved) {
+      router.push("/role-selection")
+      return
+    }
+
     if (saved === "company" || saved === "builder") {
       setViewMode(saved)
     }
@@ -23,13 +31,15 @@ export default function Home() {
 
     window.addEventListener("view_mode_changed", handleStorage)
     return () => window.removeEventListener("view_mode_changed", handleStorage)
-  }, [])
+  }, [router])
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] text-[#0E0E0C] overflow-hidden selection:bg-[#0F52BA]/20">
       <Suspense fallback={<div className="h-16 w-full" />}>
         <Navbar />
       </Suspense>
+
+
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 sm:pt-48 sm:pb-32 px-6 overflow-hidden">
@@ -113,19 +123,27 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16 animate-slide-up">
             <h2 className="font-serif text-3xl sm:text-5xl text-[#0E0E0C] mb-4 tracking-tight">
-              Three steps to get discovered.
+              {viewMode === "builder" 
+                ? "Three steps to get discovered." 
+                : "Three steps to hire the top 1%."}
             </h2>
             <p className="text-base text-[#6A6A66] max-w-lg mx-auto">
-              The fastest way to prove your skills and bypass traditional recruiting screens.
+              {viewMode === "builder" 
+                ? "The fastest way to prove your skills and bypass traditional recruiting screens."
+                : "Stop relying on self-reported resumes. Use our dynamic ATS to find pre-vetted builders instantly."}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {[
+            {(viewMode === "builder" ? [
               { num: "1", title: "Sign up & link GitHub", desc: "Create your account securely and connect your public GitHub profile.", iconBg: "bg-[#E8EFFE]", iconColor: "text-[#0F52BA]" },
               { num: "2", title: "The Engine analyzes", desc: "Our algorithm automatically evaluates your repos across 5 critical dimensions.", iconBg: "bg-[#E4F4EE]", iconColor: "text-[#0A7250]" },
               { num: "3", title: "Companies find you", desc: "Top tech companies actively browse Verqify to find verified builders directly.", iconBg: "bg-[#FEF3C7]", iconColor: "text-[#D97706]" }
-            ].map((step, i) => (
+            ] : [
+              { num: "1", title: "Set your filters", desc: "Filter our ATS by code quality, stack, and project complexity dynamically.", iconBg: "bg-[#E8EFFE]", iconColor: "text-[#0F52BA]" },
+              { num: "2", title: "Analyze real work", desc: "Skip the resume. See exactly what they built, how complex it is, and their code habits.", iconBg: "bg-[#E4F4EE]", iconColor: "text-[#0A7250]" },
+              { num: "3", title: "Shortlist & Contact", desc: "Save high-scoring builders to your dashboard and unlock their contact details.", iconBg: "bg-[#FEF3C7]", iconColor: "text-[#D97706]" }
+            ]).map((step, i) => (
               <div 
                 key={i} 
                 className="bg-[#FAFAFA] border border-black/5 rounded-3xl p-8 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all duration-300 group"
@@ -133,7 +151,7 @@ export default function Home() {
                 <div className={`w-14 h-14 ${step.iconBg} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                   <span className={`font-serif text-2xl ${step.iconColor} font-semibold`}>{step.num}</span>
                 </div>
-                <h3 className="font-serif text-2xl font-bold text-[#0E0E0C] mb-3">Verqify Protocol</h3>
+                <h3 className="font-serif text-2xl font-bold text-[#0E0E0C] mb-3">{step.title}</h3>
                 <p className="text-[#6A6A66] leading-relaxed">
                   {step.desc}
                 </p>
@@ -196,18 +214,44 @@ export default function Home() {
       <section className="px-6 py-32 bg-[#FAFAFA]">
         <div className="max-w-4xl mx-auto text-center animate-slide-up">
           <h1 className="font-serif text-6xl sm:text-8xl text-[#0E0E0C] font-bold mb-6 tracking-tighter leading-[0.9]">
-          Verified by <br />
-          <span className="text-[#0F52BA]">work</span>, not words.
-        </h1>
-        <p className="text-xl sm:text-2xl text-[#6A6A66] mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
-          India&apos;s first verified builder platform. Stop sending resumes. <br className="hidden sm:block" /> Start sending your <span className="text-[#0E0E0C] font-bold underline decoration-[#0F52BA]/30">Verqify Score</span>.
-        </p>
-          <Link
-            href="/signup"
-            className="inline-block px-10 py-5 bg-[#0E0E0C] text-white text-lg font-semibold rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300"
-          >
-            Create your account now
-          </Link>
+            {viewMode === "builder" ? (
+              <>
+                Verified by <br />
+                <span className="text-[#0F52BA]">work</span>, not words.
+              </>
+            ) : (
+              <>
+                Hire by <br />
+                <span className="text-[#0A7250]">code</span>, not resumes.
+              </>
+            )}
+          </h1>
+          <p className="text-xl sm:text-2xl text-[#6A6A66] mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
+            {viewMode === "builder" ? (
+              <>
+                India&apos;s first verified builder platform. Stop sending resumes. <br className="hidden sm:block" /> Start sending your <span className="text-[#0E0E0C] font-bold underline decoration-[#0F52BA]/30">Verqify Score</span>.
+              </>
+            ) : (
+              <>
+                Source the top 1% of talent natively based on verified GitHub commits. <br className="hidden sm:block" /> The fastest way to build your <span className="text-[#0E0E0C] font-bold underline decoration-[#0A7250]/30">engineering team</span>.
+              </>
+            )}
+          </p>
+          {viewMode === "builder" ? (
+            <Link
+              href="/signup"
+              className="inline-block px-10 py-5 bg-[#0E0E0C] text-white text-lg font-semibold rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300"
+            >
+              Create your account now
+            </Link>
+          ) : (
+            <Link
+              href="/company/signup"
+              className="inline-block px-10 py-5 bg-[#0A7250] text-white text-lg font-semibold rounded-full shadow-[0_4px_20px_rgba(10,114,80,0.3)] hover:shadow-[0_8px_30px_rgba(10,114,80,0.4)] hover:-translate-y-1 transition-all duration-300 border border-white/10"
+            >
+              Start Hiring Now
+            </Link>
+          )}
         </div>
       </section>
 

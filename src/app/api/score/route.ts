@@ -60,8 +60,24 @@ export async function POST(request: NextRequest) {
       topRepos.map((repo) => fetchRepoDetails(repo.full_name))
     );
 
-    // 3. Calculate scores via AI
-    const scores = await calculateScores(topRepos, repoDetails);
+    // Fetch previous score early to use as an AI baseline
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user || !user.email) {
+      return NextResponse.json({ error: "Sign in to generate your Verqify Score" }, { status: 401 });
+    }
+
+    const { data: previousStudent } = await supabase
+      .from("students")
+      .select("verq_score, name")
+      .eq("email", user.email)
+      .single();
+
+    const previousScore = previousStudent?.verq_score || 0;
+
+    // 3. Calculate scores via AI (Passing previous score for relative grading)
+    const scores = await calculateScores(topRepos, repoDetails, previousScore);
 
     // 4. Extract rich insights (Top Languages & Top Repos)
     const languageBytes: Record<string, number> = {};
@@ -94,22 +110,6 @@ export async function POST(request: NextRequest) {
       updated_at: r.pushed_at || r.updated_at
     }));
 
-    // 5. Upsert into Supabase
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user || !user.email) {
-      return NextResponse.json({ error: "Sign in to generate your Verqify Score" }, { status: 401 });
-    }
-
-    // Fetch previous score to check for improvement
-    const { data: previousStudent } = await supabase
-      .from("students")
-      .select("verq_score, name")
-      .eq("email", user.email)
-      .single();
-
-    const previousScore = previousStudent?.verq_score || 0;
     const isImprovement = scores.overall > previousScore && previousScore > 0;
 
     const { error: dbError } = await supabase

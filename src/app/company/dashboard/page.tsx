@@ -48,8 +48,11 @@ export default async function CompanyDashboardPage({
   } else {
     // 1. Verify user is a company
     const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser || authUser.user_metadata?.role !== "company") {
+    if (!authUser) {
       redirect("/signin")
+    }
+    if (authUser.user_metadata?.role !== "company") {
+      redirect("/dashboard")
     }
     user = authUser;
 

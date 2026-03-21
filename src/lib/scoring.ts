@@ -278,7 +278,8 @@ function calculateHeuristicScores(
  */
 export async function calculateScores(
   repos: GitHubRepo[],
-  repoDetails: RepoDetails[]
+  repoDetails: RepoDetails[],
+  previousScore: number = 0
 ): Promise<ScoreBreakdown> {
   const heuristicScores = calculateHeuristicScores(repos, repoDetails);
 
@@ -314,6 +315,8 @@ Based on their repository data below, grade their skill level from 0 to 100 on f
 - Documentation: Reward long, detailed READMEs.
 - Deployment: Reward repos with homepages and github pages.
 - Overall: Provide a realistic aggregate score.
+
+CRITICAL CONTEXT: The candidate's previous Verqify score was ${previousScore}. They just clicked "Rescore" after making updates to their profile. You MUST evaluate their new data relative to this baseline. If they added new repositories, wrote more commits, or added READMEs/deployments, you MUST tangibly increase their overall score above ${previousScore} to reward their progress. Do not let the score stagnate if there is new activity!
 
 CRITICAL: You must also analyze their weakest areas across the 5 dimensions. Instead of generic project ideas, generate exactly 3 highly specific, actionable steps the candidate should take right now to directly improve their score. For example: "Your deployment score is 25. Adding a working Vercel deploy link and a CI workflow to your main repo will bump it to 85."
 

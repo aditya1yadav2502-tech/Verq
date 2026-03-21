@@ -27,7 +27,7 @@ export default function SigninPage() {
     setMessage("")
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
@@ -38,7 +38,15 @@ export default function SigninPage() {
       return
     }
 
-    router.push("/dashboard")
+    if (authData.user?.user_metadata?.role === "company") {
+      localStorage.setItem("verq_view_mode", "company")
+      window.dispatchEvent(new Event("view_mode_changed"))
+      router.push("/company/dashboard")
+    } else {
+      localStorage.setItem("verq_view_mode", "builder")
+      window.dispatchEvent(new Event("view_mode_changed"))
+      router.push("/dashboard")
+    }
   }
 
   return (

@@ -128,6 +128,7 @@ async function checkReadme(
   try {
     const res = await fetch(`${GITHUB_API}/repos/${fullName}/readme`, {
       headers: getHeaders(),
+      next: { revalidate: 0 },
     });
     if (!res.ok) return { exists: false, length: 0 };
     const data = await res.json();

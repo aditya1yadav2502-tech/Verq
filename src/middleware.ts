@@ -49,13 +49,30 @@ export async function middleware(request: NextRequest) {
   }
   */
 
-  // Redirect /, /signin, and /signup to /dashboard if already logged in
+  // Role-based redirection logic
+  const role = user?.user_metadata?.role;
+
+  // 1. Handle landing/auth pages for logged-in users
   if (
     user &&
     (request.nextUrl.pathname === "/" ||
       request.nextUrl.pathname === "/signin" ||
       request.nextUrl.pathname === "/signup")
   ) {
+    const url = request.nextUrl.clone()
+    url.pathname = role === "company" ? "/company/dashboard" : "/dashboard"
+    return NextResponse.redirect(url)
+  }
+
+  // 2. Protect Student Dashboard from Companies
+  if (user && role === "company" && request.nextUrl.pathname.startsWith("/dashboard")) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/company/dashboard"
+    return NextResponse.redirect(url)
+  }
+
+  // 3. Protect Company Dashboard from Students
+  if (user && role !== "company" && request.nextUrl.pathname.startsWith("/company/dashboard")) {
     const url = request.nextUrl.clone()
     url.pathname = "/dashboard"
     return NextResponse.redirect(url)

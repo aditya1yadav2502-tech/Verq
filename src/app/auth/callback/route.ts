@@ -36,7 +36,12 @@ export async function GET(request: Request) {
         }
       }
 
-      return NextResponse.redirect(`${origin}${next}`)
+      let finalRedirect = next;
+      if (user.user_metadata?.role === "company" && next === "/dashboard") {
+         finalRedirect = "/company/dashboard";
+      }
+
+      return NextResponse.redirect(`${origin}${finalRedirect}`)
     }
   }
 

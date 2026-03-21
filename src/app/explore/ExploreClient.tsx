@@ -5,7 +5,6 @@ import Link from "next/link"
 import Navbar from "@/components/Navbar"
 import PulseFeed from "@/components/PulseFeed"
 import FilterSidebar from "@/components/FilterSidebar"
-import SalaryMap from "@/components/SalaryMap"
 import QuickViewModal from "@/components/QuickViewModal"
 import PricingModal from "@/components/PricingModal"
 
@@ -335,9 +334,6 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
 
         {/* Right Sidebar: Market Insights & Pulse */}
         <aside className="animate-slide-up sticky top-28 h-fit hidden lg:block space-y-8" style={{ animationDelay: '0.2s' }}>
-          {filteredStudents[0] && (
-            <SalaryMap score={filteredStudents[0].verq_score} />
-          )}
           <PulseFeed />
         </aside>
 

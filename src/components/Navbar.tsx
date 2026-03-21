@@ -68,36 +68,39 @@ function NavbarContent() {
 
         {!loading && (
           <div className="flex items-center justify-end gap-1 sm:gap-2 relative z-10">
-            <Link
-              href="/"
-              className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5"
-            >
-              Home
-            </Link>
+            {(user || isCompanyPreview) && (
+              <>
+                <Link
+                  href="/"
+                  className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5"
+                >
+                  Home
+                </Link>
 
-            {!isCompanyMode ? (
-              <Link
-                href="/leaderboard"
-                className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5 hidden sm:block"
-              >
-                Leaderboard
-              </Link>
+                {!isCompanyMode ? (
+                  <Link
+                    href="/leaderboard"
+                    className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5 hidden sm:block"
+                  >
+                    Leaderboard
+                  </Link>
+                ) : (
+                  <Link
+                    href="/explore"
+                    className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5 hidden sm:block"
+                  >
+                    Search ATS
+                  </Link>
+                )}
 
-            ) : (
-              <Link
-                href="/explore"
-                className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5 hidden sm:block"
-              >
-                Search ATS
-              </Link>
+                <Link
+                  href={isCompanyMode ? "/company/dashboard" : "/dashboard"}
+                  className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5"
+                >
+                  Dashboard
+                </Link>
+              </>
             )}
-
-            <Link
-              href={isCompanyMode ? "/company/dashboard" : "/dashboard"}
-              className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5"
-            >
-              Dashboard
-            </Link>
 
             {user || isCompanyPreview ? (
               <div className="flex items-center gap-3 ml-1 pl-3 border-l border-black/10">
@@ -109,12 +112,6 @@ function NavbarContent() {
             ) : (
               <div className="flex items-center gap-1 ml-1 sm:ml-2">
                 <Link
-                  href={!isCompanyMode ? "/signin" : "/company/signup"}
-                  className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] transition-colors px-3 py-1.5 hidden sm:block"
-                >
-                  Sign in
-                </Link>
-                <Link
                   href={!isCompanyMode ? "/signup" : "/company/signup"}
                   className={`text-sm font-semibold text-white px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 ${!isCompanyMode ? "bg-[#0E0E0C] hover:bg-[#3B3B38]" : "bg-[#0A7250] hover:bg-[#075A3F]"}`}
                 >
@@ -124,6 +121,7 @@ function NavbarContent() {
             )}
           </div>
         )}
+
 
 
       </nav>

@@ -22,17 +22,23 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
 
 export async function POST(request: NextRequest) {
   try {
-    // Production Rate limit check
+    // Production Rate limit check (Graceful fallback)
     if (ratelimit) {
-      const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-      const { success } = await ratelimit.limit(`ratelimit_${ip}`);
-      if (!success) {
-        return NextResponse.json(
-          { error: "Too many scoring requests. Please try again in 1 minute." },
-          { status: 429 }
-        );
+      try {
+        const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+        const { success } = await ratelimit.limit(`ratelimit_${ip}`);
+        if (!success) {
+          return NextResponse.json(
+            { error: "Too many scoring requests. Please try again in 1 minute." },
+            { status: 429 }
+          );
+        }
+      } catch (redisError) {
+        console.error("Ratelimit (Redis) check failed, skipping:", redisError);
+        // Continue to scoring even if ratelimit fails to prevent hard lock
       }
     }
+
 
     const body = await request.json();
     const { github_url } = body;

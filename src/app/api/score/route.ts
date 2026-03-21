@@ -139,9 +139,10 @@ export async function POST(request: NextRequest) {
       console.error("Supabase update error:", dbError);
       return NextResponse.json({
         scores,
-        warning: "Scores calculated but failed to save to database",
-      });
+        warning: `Scores calculated but failed to save to database: ${dbError.message} (${dbError.details || "no details"})`,
+      }, { status: 500 });
     }
+
 
     // Send alerts to companies tracking this candidate if score improved
     if (isImprovement) {

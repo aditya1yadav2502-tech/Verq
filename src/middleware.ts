@@ -78,8 +78,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // 4. Domain Redirection (Rebranding: verq-two -> verqify)
+  const host = request.headers.get("host")
+  if (host === "verq-two.vercel.app") {
+    const url = request.nextUrl.clone()
+    url.host = "verqify-l43l29vq7-aditya1yadav2502-techs-projects.vercel.app"
+    url.protocol = "https"
+    return NextResponse.redirect(url, { status: 301 })
+  }
+
   return supabaseResponse
 }
+
 
 export const config = {
   matcher: [

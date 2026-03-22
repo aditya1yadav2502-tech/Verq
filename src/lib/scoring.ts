@@ -357,3 +357,35 @@ export function getRelativeRanking(score: number, language?: string): string {
   if (score >= 60) return `Top 40%${langStr}`;
   return `Building momentum${langStr}`;
 }
+
+export function getSkillFingerprint(breakdown: {
+  code_quality: number;
+  project_complexity: number;
+  commit_consistency: number;
+  documentation: number;
+  deployment: number;
+}): string {
+  if (!breakdown) return "Analyzing code fingerprint...";
+
+  const scores = [
+    { name: "Code Quality", score: breakdown.code_quality || 0 },
+    { name: "Project Complexity", score: breakdown.project_complexity || 0 },
+    { name: "Commit Consistency", score: breakdown.commit_consistency || 0 },
+    { name: "Documentation", score: breakdown.documentation || 0 },
+    { name: "Deployment", score: breakdown.deployment || 0 },
+  ];
+
+  scores.sort((a, b) => b.score - a.score);
+
+  const top1 = scores[0].name;
+  const top2 = scores[1].name;
+  let lowest = scores[scores.length - 1].name;
+  
+  // If lowest is the same as top1 or top2 (e.g., all 0), pick the last one
+  if (lowest === top1 || lowest === top2) {
+    lowest = scores[scores.length - 1].name;
+  }
+
+  return `Strong in ${top1} and ${top2}. Growing in ${lowest}.`;
+}
+

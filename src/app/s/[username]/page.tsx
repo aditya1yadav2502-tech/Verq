@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar"
 import BookmarkButton from "@/components/BookmarkButton"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import ShareModal from "@/components/ShareModal"
-import { getRelativeRanking } from "@/lib/scoring"
+import { getRelativeRanking, getSkillFingerprint } from "@/lib/scoring"
 
 interface PageProps {
   params: Promise<{ username: string }>
@@ -64,6 +64,14 @@ export default async function StudentProfile({ params }: PageProps) {
     { label: "Deployment", score: student.score_deployment },
   ]
 
+  const fingerprint = isScored ? getSkillFingerprint({
+    code_quality: student.score_code_quality || 0,
+    project_complexity: student.score_project_complexity || 0,
+    commit_consistency: student.score_commit_consistency || 0,
+    documentation: student.score_documentation || 0,
+    deployment: student.score_deployment || 0,
+  }) : "Analyzing code fingerprint...";
+
   const topLanguage = student.languages && (student.languages as any[]).length > 0
     ? (student.languages as any[])[0].name
     : undefined;
@@ -117,19 +125,13 @@ export default async function StudentProfile({ params }: PageProps) {
               </div>
             </div>
             
-            <div className={`text-center md:text-right bg-white border border-black/5 rounded-3xl p-6 min-w-[160px] ${getScoreGlow(student.verq_score)} transition-shadow duration-500`}>
-              <div className="font-serif text-5xl sm:text-6xl text-[#0E0E0C] font-bold mb-1 tracking-tighter">
-                {isScored ? student.verq_score : "--"}
+            <div className={`text-center md:text-right bg-white border border-black/5 rounded-3xl p-6 min-w-[200px] max-w-[300px] ${getScoreGlow(student.verq_score)} transition-shadow duration-500 flex flex-col justify-center`}>
+              <div className="font-serif text-lg sm:text-xl text-[#0E0E0C] font-bold mb-3 tracking-tight leading-snug text-balance">
+                {isScored ? fingerprint : "Analyzing code fingerprint..."}
               </div>
-              <div className="text-xs text-[#9A9A95] font-mono tracking-widest uppercase mb-3">Verqify Score</div>
-              {isScored ? (
-                <div className="flex flex-col items-center md:items-end gap-2 mt-2">
-                  <div className="text-sm font-semibold text-[#0E0E0C]">
-                    {getRelativeRanking(student.verq_score, topLanguage)}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-xs bg-[#FEF3C7] border border-[#FDE68A] text-[#D97706] py-1 px-3 rounded-full font-mono inline-block shadow-sm mt-3">
+              <div className="text-[9px] text-[#9A9A95] font-mono tracking-widest uppercase">Skill Fingerprint</div>
+              {!isScored && (
+                <div className="text-xs bg-[#FEF3C7] border border-[#FDE68A] text-[#D97706] py-1 px-3 rounded-full font-mono inline-block shadow-sm mt-3 self-center md:self-end">
                   Pending
                 </div>
               )}
@@ -164,7 +166,7 @@ export default async function StudentProfile({ params }: PageProps) {
             
             {isScored && (
               <div className="ml-auto flex items-center w-full sm:w-auto mt-4 sm:mt-0">
-                      <ShareModal student={student} topLanguage={topLanguage} />
+                      <ShareModal student={student} topLanguage={topLanguage} fingerprint={fingerprint} />
               </div>
             )}
           </div>
@@ -247,8 +249,8 @@ export default async function StudentProfile({ params }: PageProps) {
                   <div key={dim.label}>
                     <div className="flex items-baseline justify-between mb-2">
                       <span className="text-sm font-medium text-white/90">{dim.label}</span>
-                      <span className="text-xs text-white/50 font-mono tracking-wider">
-                        {isScored ? `${dim.score}/100` : "--"}
+                      <span className="text-[10px] text-white/30 font-mono font-black uppercase tracking-wider">
+                        {isScored ? "Analyzed" : "--"}
                       </span>
                     </div>
                     <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">

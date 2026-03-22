@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { getSkillFingerprint } from "@/lib/scoring"
 
 interface Bookmark {
   student_email: string
@@ -13,6 +14,9 @@ interface Bookmark {
     verq_score: number
     score_code_quality: number
     score_project_complexity: number
+    score_commit_consistency: number
+    score_documentation: number
+    score_deployment: number
   }
 }
 
@@ -42,7 +46,7 @@ export default function AtsTableClient({ initialBookmarks }: { initialBookmarks:
           <thead>
             <tr className="border-b border-black/5 bg-[#FAFAFA]">
               <th className="px-6 py-5 text-[10px] font-black text-[#9A9A95] uppercase tracking-[0.2em] w-1/4">Builder</th>
-              <th className="px-6 py-5 text-[10px] font-black text-[#9A9A95] uppercase tracking-[0.2em] w-[15%] hidden sm:table-cell">Score</th>
+              <th className="px-6 py-5 text-[10px] font-black text-[#9A9A95] uppercase tracking-[0.2em] w-[25%] hidden sm:table-cell">Fingerprint</th>
               <th className="px-6 py-5 text-[10px] font-black text-[#9A9A95] uppercase tracking-[0.2em] w-[40%]">Private Note</th>
               <th className="px-6 py-5 text-[10px] font-black text-[#9A9A95] uppercase tracking-[0.2em] w-[20%] text-right">Status</th>
             </tr>
@@ -69,10 +73,16 @@ export default function AtsTableClient({ initialBookmarks }: { initialBookmarks:
                       </div>
                     </Link>
                   </td>
-                  <td className="px-6 py-6 hidden sm:table-cell border-r border-black/5">
-                    <span className={`text-sm font-mono font-bold px-3 py-1 rounded-full ${getScoreColor(student.verq_score)} shadow-sm`}>
-                      {student.verq_score}
-                    </span>
+                  <td className="px-6 py-4 hidden sm:table-cell border-r border-black/5 align-middle">
+                     <p className="text-[10px] font-medium text-[#6A6A66] leading-relaxed pr-2 text-balance w-full">
+                      {getSkillFingerprint({
+                        code_quality: student.score_code_quality,
+                        project_complexity: student.score_project_complexity,
+                        commit_consistency: student.score_commit_consistency,
+                        documentation: student.score_documentation,
+                        deployment: student.score_deployment
+                      })}
+                     </p>
                   </td>
                   <td className="px-6 py-4 border-r border-black/5">
                     <textarea 

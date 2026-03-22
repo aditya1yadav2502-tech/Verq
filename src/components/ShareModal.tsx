@@ -3,7 +3,7 @@
 import { useState } from "react"
 import VerqifyCard from "./VerqifyCard"
 
-export default function ShareModal({ student, topLanguage }: { student: any, topLanguage?: string }) {
+export default function ShareModal({ student, topLanguage, fingerprint }: { student: any, topLanguage?: string, fingerprint: string }) {
   const [open, setOpen] = useState(false)
   
   const ButtonEl = (
@@ -36,13 +36,14 @@ export default function ShareModal({ student, topLanguage }: { student: any, top
           
           <VerqifyCard 
             name={student.name}
-            score={student.verq_score}
+            fingerprint={fingerprint}
             college={student.college}
             topLanguage={topLanguage}
-            avatar={student.name.charAt(0).toUpperCase()}
+            avatar={student.name?.charAt(0).toUpperCase()}
           />
         </div>
       </div>
     </>
   )
 }
+

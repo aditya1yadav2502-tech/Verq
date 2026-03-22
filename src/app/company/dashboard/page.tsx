@@ -31,7 +31,10 @@ export default async function CompanyDashboardPage({
           college: "IIT Delhi",
           verq_score: 94,
           score_code_quality: 92,
-          score_project_complexity: 96
+          score_project_complexity: 96,
+          score_commit_consistency: 90,
+          score_documentation: 85,
+          score_deployment: 88,
         }
       },
       {
@@ -41,7 +44,10 @@ export default async function CompanyDashboardPage({
           college: "BITS Pilani",
           verq_score: 88,
           score_code_quality: 85,
-          score_project_complexity: 90
+          score_project_complexity: 90,
+          score_commit_consistency: 80,
+          score_documentation: 75,
+          score_deployment: 82,
         }
       }
     ];
@@ -67,7 +73,7 @@ export default async function CompanyDashboardPage({
     // 3. Fetch bookmarked students
     const { data: bookmarksData } = await supabase
       .from("bookmarks")
-      .select("student_email, notes, status, students!inner(name, college, verq_score, score_code_quality, score_project_complexity)")
+      .select("student_email, notes, status, students!inner(name, college, verq_score, score_code_quality, score_project_complexity, score_commit_consistency, score_documentation, score_deployment)")
       .eq("company_email", user.email)
       .order("created_at", { ascending: false })
     bookmarks = bookmarksData;

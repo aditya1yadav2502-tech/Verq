@@ -7,6 +7,7 @@ import PulseFeed from "@/components/PulseFeed"
 import FilterSidebar from "@/components/FilterSidebar"
 import QuickViewModal from "@/components/QuickViewModal"
 import PricingModal from "@/components/PricingModal"
+import { getSkillFingerprint } from "@/lib/scoring"
 
 type Student = {
   name: string
@@ -280,8 +281,8 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
                             {bookmarks.has(student.email) ? "Saved" : "Save"}
                           </span>
                         </button>
-                        <div className={`text-sm font-mono font-bold px-2 py-1 rounded-lg border shadow-sm ${getScoreColor(student.verq_score)}`}>
-                          {student.verq_score}
+                        <div className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-lg border shadow-sm ${getScoreColor(student.verq_score)}`}>
+                          Verified
                         </div>
                       </div>
                       <button 
@@ -307,24 +308,16 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
                     </div>
                   )}
 
-                  {/* Mini score bars */}
-                  <div className="mt-auto space-y-2 bg-[#FAFAFA] border border-black/5 rounded-2xl p-3 group-hover:bg-white transition-colors">
-                    {[
-                      { label: "Code", score: student.score_code_quality },
-                      { label: "Complexity", score: student.score_project_complexity },
-                      { label: "Commits", score: student.score_commit_consistency },
-                    ].map((dim) => (
-                      <div key={dim.label} className="flex items-center gap-3">
-                        <span className="text-[9px] uppercase tracking-widest font-mono text-[#6A6A66] w-16 truncate">{dim.label}</span>
-                        <div className="flex-1 h-1.5 bg-[#E2E1DC] rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${getBarColor(dim.score)}`}
-                            style={{ width: `${dim.score}%` }}
-                          />
-                        </div>
-                        <span className="text-[9px] font-mono font-semibold text-[#9A9A95] w-5 text-right">{dim.score}</span>
-                      </div>
-                    ))}
+                  <div className="mt-auto bg-[#FAFAFA] border border-black/5 rounded-2xl p-4 group-hover:bg-white transition-colors text-balance">
+                    <p className="text-xs font-medium text-[#6A6A66] leading-relaxed group-hover:text-[#0E0E0C] transition-colors">
+                      {getSkillFingerprint({
+                        code_quality: student.score_code_quality || 0,
+                        project_complexity: student.score_project_complexity || 0,
+                        commit_consistency: student.score_commit_consistency || 0,
+                        documentation: student.score_documentation || 0,
+                        deployment: student.score_deployment || 0
+                      })}
+                    </p>
                   </div>
                 </Link>
               ))}

@@ -7,7 +7,7 @@ import GenerateActionPlanButton from "@/components/GenerateActionPlanButton"
 import Navbar from "@/components/Navbar"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import ShareModal from "@/components/ShareModal"
-import { getRelativeRanking } from "@/lib/scoring"
+import { getRelativeRanking, getSkillFingerprint } from "@/lib/scoring"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -46,6 +46,14 @@ export default async function DashboardPage() {
     { label: "Documentation", score: student?.score_documentation },
     { label: "Deployment", score: student?.score_deployment },
   ]
+
+  const fingerprint = isScored ? getSkillFingerprint({
+    code_quality: student?.score_code_quality || 0,
+    project_complexity: student?.score_project_complexity || 0,
+    commit_consistency: student?.score_commit_consistency || 0,
+    documentation: student?.score_documentation || 0,
+    deployment: student?.score_deployment || 0,
+  }) : "Analyzing code fingerprint...";
 
   const topLanguage = student?.languages && (student.languages as any[]).length > 0
     ? (student.languages as any[])[0].name
@@ -105,13 +113,13 @@ export default async function DashboardPage() {
             <div className="bg-white border border-black/5 rounded-[2.5rem] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-slide-up relative overflow-hidden">
               <div className="flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
                 <div className="relative shrink-0">
-                  <div className={`w-56 h-56 rounded-full border-[10px] border-[#F6F6F3] flex items-center justify-center shadow-inner ${getScoreGlow(student.verq_score)} transition-all duration-700`}>
+                  <div className={`w-56 h-56 rounded-full border-[10px] border-[#F6F6F3] flex items-center justify-center p-6 shadow-inner ${getScoreGlow(student.verq_score)} transition-all duration-700`}>
                     <div className="text-center">
-                      <div className="font-serif text-8xl text-[#0E0E0C] font-bold tracking-tighter leading-none mb-1">
-                        {isScored ? student.verq_score : "--"}
+                      <div className="font-serif text-lg sm:text-xl text-[#0E0E0C] font-bold tracking-tight leading-snug mb-3 text-balance">
+                        {fingerprint}
                       </div>
-                      <div className={`text-[10px] font-mono font-black uppercase tracking-[0.2em] py-1 px-3 rounded-full inline-block ${student.verq_score >= 40 ? 'bg-[#0F52BA]/10 text-[#0F52BA]' : 'bg-[#D97706]/10 text-[#D97706]'}`}>
-                        Rank {getGrade(student.verq_score || 0)}
+                      <div className={`text-[9px] font-mono font-black uppercase tracking-[0.2em] py-1 px-3 rounded-full inline-block ${student.verq_score >= 40 ? 'bg-[#0F52BA]/10 text-[#0F52BA]' : 'bg-[#D97706]/10 text-[#D97706]'}`}>
+                        Building Profile
                       </div>
                     </div>
                   </div>
@@ -145,7 +153,7 @@ export default async function DashboardPage() {
                     <div className="sm:w-48">
                       <RescoreButton githubUrl={student.github_url} />
                     </div>
-                    <ShareModal student={student} topLanguage={topLanguage} />
+                    <ShareModal student={student} topLanguage={topLanguage} fingerprint={fingerprint} />
                   </div>
                 </div>
               </div>
@@ -238,8 +246,8 @@ export default async function DashboardPage() {
                       <div key={dim.label}>
                         <div className="flex items-baseline justify-between mb-3">
                           <span className="text-xs font-black uppercase tracking-widest text-white/50">{dim.label}</span>
-                          <span className="text-[10px] text-white font-mono font-black italic">
-                            {isScored ? `${dim.score}%` : "--"}
+                          <span className="text-[10px] text-white/30 font-mono font-black uppercase">
+                            {isScored ? "Analyzed" : "--"}
                           </span>
                         </div>
                         <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 p-[2px]">

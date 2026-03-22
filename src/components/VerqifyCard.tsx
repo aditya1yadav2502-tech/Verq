@@ -6,21 +6,19 @@ import VerifiedBadge from "./VerifiedBadge"
 
 interface VerqifyCardProps {
   name: string
-  score: number | string
+  fingerprint: string
   college?: string
   topLanguage?: string
   avatar?: string
-  rank?: string
   stats?: { label: string; value: string }[]
 }
 
 export default function VerqifyCard({ 
   name, 
-  score, 
+  fingerprint, 
   college, 
   topLanguage, 
   avatar = name.charAt(0).toUpperCase(),
-  rank,
   stats
 }: VerqifyCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
@@ -124,33 +122,29 @@ export default function VerqifyCard({
                {college || "Independent Builder"}
              </p>
 
-             {rank && (
-               <div className="bg-white/10 border border-white/10 px-3 py-1 rounded-full mb-6">
-                 <span className="text-[10px] font-black uppercase tracking-widest text-[#BFD4FF]">{rank}</span>
-               </div>
-             )}
-
-             <div className="w-full grid grid-cols-2 gap-4 mb-4">
+             <div className="w-full flex flex-col gap-4 mb-4">
                 {stats ? (
-                  stats.map((s, i) => (
-                    <div key={i} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
-                       <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">{s.label}</p>
-                       <p className="font-serif text-2xl font-bold text-white leading-none">
-                         {s.value}
-                       </p>
-                    </div>
-                  ))
+                  <div className="grid grid-cols-2 gap-4">
+                    {stats.map((s, i) => (
+                      <div key={i} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
+                         <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">{s.label}</p>
+                         <p className="font-serif text-2xl font-bold text-white leading-none">
+                           {s.value}
+                         </p>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <>
-                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
-                      <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">Verqify Score</p>
-                      <p className="font-serif text-4xl font-bold text-white leading-none">
-                        {score}
+                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner w-full text-center">
+                      <p className="text-[8px] uppercase font-black tracking-widest text-[#BFD4FF] mb-2 group-hover/stat:text-white transition-colors">Skill Fingerprint</p>
+                      <p className="font-serif text-sm font-medium text-white leading-relaxed text-balance">
+                        {fingerprint}
                       </p>
                     </div>
-                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner">
+                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center group/stat shadow-inner w-full">
                       <p className="text-[8px] uppercase font-black tracking-widest text-[#A7D7C5] mb-2 group-hover/stat:text-white transition-colors">Top Stack</p>
-                      <p className="font-mono text-[10px] font-bold text-white uppercase tracking-tighter mt-1 truncate max-w-full">
+                      <p className="font-mono text-xs font-bold text-white uppercase tracking-tighter mt-1 truncate max-w-full">
                         {topLanguage || "Fullstack"}
                       </p>
                     </div>

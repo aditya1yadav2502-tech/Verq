@@ -3,6 +3,7 @@
 import Link from "next/link"
 import VerqifyCard from "./VerqifyCard"
 import { useState } from "react"
+import { getSkillFingerprint } from "@/lib/scoring"
 
 interface Repository {
   name: string
@@ -72,12 +73,18 @@ export default function QuickViewModal({ isOpen, onClose, student, onUnlockConta
            <div className="scale-90 sm:scale-100 transition-transform">
              <VerqifyCard 
                 name={student.name}
-                score={student.verq_score}
-                rank="Global Top 0.1%"
+                fingerprint={getSkillFingerprint({
+                  code_quality: student.score_code_quality || 0,
+                  project_complexity: student.score_project_complexity || 0,
+                  commit_consistency: student.score_commit_consistency || 0,
+                  documentation: student.score_documentation || 0,
+                  deployment: student.score_deployment || 0
+                })}
                 stats={[
                   { label: "Quality", value: String(student.score_code_quality) },
                   { label: "Complexity", value: String(student.score_project_complexity) },
-                  { label: "Consistency", value: String(student.score_commit_consistency) }
+                  { label: "Consistency", value: String(student.score_commit_consistency) },
+                  { label: "Deployment", value: String(student.score_deployment) }
                 ]}
              />
            </div>

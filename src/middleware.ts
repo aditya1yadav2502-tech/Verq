@@ -2,6 +2,14 @@ import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
+  // 0. OAuth Fallback Catch
+  // If Supabase OAuth redirects to the root URL instead of /auth/callback (due to URL config restrictions),
+  // we catch the code parameter here and manually route it to the proper callback endpoint.
+  if (request.nextUrl.pathname === "/" && request.nextUrl.searchParams.has("code")) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/auth/callback"
+    return NextResponse.redirect(url)
+  }
   let supabaseResponse = NextResponse.next({
     request,
   })

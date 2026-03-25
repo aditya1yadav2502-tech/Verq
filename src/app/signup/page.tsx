@@ -74,7 +74,7 @@ export default function SignupPage() {
         })
         const data = await res.json()
         if (data.scores) {
-          setMessage(`Your Verqify score: ${data.scores.overall}/100 🎉 Redirecting...`)
+          setMessage(`Skill Fingerprint generated! 🎉 Redirecting...`)
           setTimeout(() => router.push("/dashboard"), 1500)
         } else {
           setMessage("Account created! Redirecting...")

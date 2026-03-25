@@ -86,46 +86,47 @@ export default async function CompanyDashboardPage({
   }
 
   return (
-    <main className="min-h-screen bg-[#FAFAFA] pt-24 pb-20 selection:bg-[#0F52BA]/20 relative overflow-hidden">
+    <main className="min-h-screen bg-background pt-32 pb-20 selection:bg-brand/20 relative overflow-hidden font-sans">
       <Navbar />
 
       {/* Decorative Orbs */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#0F52BA]/5 rounded-full filter blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#0A7250]/5 rounded-full filter blur-[100px] pointer-events-none translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand/5 rounded-full filter blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-white/5 rounded-full filter blur-[100px] pointer-events-none translate-y-1/2 -translate-x-1/2" />
 
-      <div className="max-w-5xl mx-auto px-6 relative z-10 animate-slide-up">
-        <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-8 pb-8 border-b border-black/5">
+      <div className="max-w-6xl mx-auto px-6 relative z-10 animate-slide-up">
+        <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-10 pb-12 border-b border-white/5">
           <div>
-            <h1 className="font-serif text-5xl sm:text-6xl text-[#0E0E0C] font-bold mb-4 tracking-tighter">
+            <h1 className="font-serif text-6xl sm:text-7xl text-white font-black mb-6 tracking-tighter">
               Hey, {company?.company_name || "Hiring Team"} 👋
             </h1>
-            <p className="text-xl text-[#6A6A66] font-medium">
-              Elite builders shortlisted for your engineering team.
+            <p className="text-xl text-foreground/40 font-medium italic font-serif-italic">
+              Acquiring the next generation of engineering talent.
             </p>
           </div>
           <Link
             href="/explore"
-            className="inline-flex items-center justify-center gap-2 bg-[#0E0E0C] text-white text-base font-bold px-8 py-4 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all group"
+            className="inline-flex items-center justify-center gap-3 bg-brand text-background text-[11px] font-black uppercase tracking-widest px-10 py-5 rounded-full shadow-2xl hover:bg-brand-light transition-all group active:scale-95"
           >
-            <span>Explore talent database</span>
-            <span className="group-hover:translate-x-1 transition-transform">→</span>
+            <span>Explore ecosystem</span>
+            <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
           </Link>
         </div>
 
         {!bookmarks || bookmarks.length === 0 ? (
-          <div className="bg-white/80 backdrop-blur-xl border border-black/5 rounded-[2rem] p-16 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center animate-fade-in">
-            <div className="w-16 h-16 bg-[#F6F5F1] rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <span className="font-serif text-3xl">⭐</span>
+          <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[3.5rem] p-20 text-center animate-fade-in shadow-2xl relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-brand/5 rounded-full filter blur-3xl pointer-events-none" />
+            <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl">
+              <span className="font-serif text-3xl font-black italic text-white/20">S</span>
             </div>
-            <p className="font-serif text-2xl text-[#0E0E0C] font-bold mb-2">Your shortlist is empty</p>
-            <p className="text-[#6A6A66] mb-8 max-w-sm mx-auto leading-relaxed">
-              Browse the explore page to discover and natively bookmark the most impressive software engineers in India.
+            <p className="font-serif text-3xl text-white font-black mb-4 tracking-tighter">Search list empty</p>
+            <p className="text-foreground/40 mb-10 max-w-sm mx-auto leading-relaxed font-medium italic font-serif-italic text-lg">
+              Synchronize with the builder registry to manifest your engineering pipeline.
             </p>
             <Link
               href="/explore"
-              className="inline-block px-8 py-3.5 bg-white border border-black/10 text-[#0E0E0C] text-sm font-semibold rounded-2xl hover:bg-[#FAFAFA] hover:shadow-sm transition-all"
+              className="inline-block px-10 py-5 bg-white/5 border border-white/10 text-white text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-white/10 transition-all active:scale-95"
             >
-              Start exploring
+              Initialize Registry
             </Link>
           </div>
         ) : (

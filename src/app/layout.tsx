@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     "India's first verified builder platform. Build real projects, get verified by AI, get discovered by companies.",
   keywords: [
     "developer platform",
-    "github score",
+    "skill fingerprint",
     "verified builders",
     "student developers",
     "tech hiring",

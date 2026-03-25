@@ -25,52 +25,50 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center px-6 selection:bg-[#0F52BA]/20 relative overflow-hidden">
+    <main className="min-h-screen bg-background flex flex-col items-center justify-center px-6 selection:bg-brand/20 relative overflow-hidden font-sans">
       
       {/* Background Orbs */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#0F52BA]/10 rounded-full filter blur-[100px] pointer-events-none -translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-brand/5 rounded-full filter blur-[120px] pointer-events-none -translate-y-1/2 -translate-x-1/2" />
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
 
-        <Link href="/" className="flex items-center justify-center gap-2 mb-10 hover:scale-105 transition-transform">
-          <div className="w-8 h-8 bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] rounded-full flex items-center justify-center shadow-inner">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" className="text-white drop-shadow-sm">
-              <path fillRule="evenodd" d="M8 0a6 6 0 0 0-6 6c0 4.1 5.3 9.4 5.6 9.7a1 1 0 0 0 1.4 0C9.3 14.8 14 10.1 14 6a6 6 0 0 0-6-6Zm0 9a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
-            </svg>
+        <Link href="/" className="flex items-center justify-center gap-3 mb-12 group">
+          <div className="w-10 h-10 bg-brand rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+             <span className="font-serif text-background font-black italic text-xl">V</span>
           </div>
-          <span className="font-serif text-2xl font-bold text-[#0E0E0C] tracking-tight">Verqify</span>
+          <span className="font-serif text-3xl font-black text-white tracking-tighter">Verqify</span>
         </Link>
 
-        <div className="text-center mb-8">
-          <h1 className="font-serif text-4xl text-[#0E0E0C] font-bold mb-2 tracking-tight">
-            Reset password
+        <div className="text-center mb-10">
+          <h1 className="font-serif text-5xl text-white font-black mb-4 tracking-tighter">
+            Recover Access
           </h1>
-          <p className="text-[#6A6A66]">
-            Enter your email to receive a recovery link.
+          <p className="text-foreground/40 font-medium italic font-serif-italic text-lg">
+            Re-authorize your native terminal.
           </p>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-xl border border-black/5 rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
+        <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[3rem] p-10 shadow-2xl">
 
           <div className="mb-8">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A6A66] mb-2 pl-1">
-              Email
+            <label className="block text-[10px] font-black uppercase tracking-widest text-foreground/40 mb-3 ml-1">
+              Terminal Identity
             </label>
             <input
               type="email"
-              placeholder="you@college.edu"
+              placeholder="you@domain.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleReset()}
-              className="w-full bg-[#FAFAFA] border border-black/5 rounded-2xl px-4 py-3.5 text-sm text-[#0E0E0C] placeholder:text-[#9A9A95] outline-none focus:ring-2 focus:ring-[#0F52BA]/20 focus:border-[#0F52BA]/30 hover:bg-white transition-all inset-shadow-sm"
+              className="w-full bg-white/[0.02] border border-white/5 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-foreground/20 outline-none focus:border-brand/40 focus:bg-white/[0.04] transition-all"
             />
           </div>
 
           {message && (
-            <div className={`mb-6 p-4 rounded-xl text-sm font-medium shadow-sm ${
+            <div className={`mb-8 p-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-center ${
               message.includes("Check your email") 
-                ? "bg-[#E4F4EE] border border-[#A7D7C5] text-[#0A7250]"
-                : "bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626]"
+                ? "bg-brand/10 border border-brand/20 text-brand-light"
+                : "bg-red-500/10 border border-red-500/20 text-red-400"
             }`}>
               {message}
             </div>
@@ -79,17 +77,17 @@ export default function ForgotPasswordPage() {
           <button
             onClick={handleReset}
             disabled={loading}
-            className="w-full bg-gradient-to-r from-[#0F52BA] to-[#0A3D8F] text-white text-sm font-semibold py-3.5 rounded-2xl shadow-[0_4px_14px_rgba(15,82,186,0.2)] hover:shadow-[0_6px_20px_rgba(15,82,186,0.3)] hover:-translate-y-0.5 transition-all disabled:opacity-50"
+            className="w-full bg-white/5 border border-white/10 text-white text-[11px] font-black uppercase tracking-widest py-4.5 rounded-full hover:bg-white/10 transition-all disabled:opacity-50 py-4 active:scale-95"
           >
-            {loading ? "Sending..." : "Send link"}
+            {loading ? "Transmitting..." : "Send link"}
           </button>
 
         </div>
 
-        <p className="text-center text-sm font-medium text-[#6A6A66] mt-8">
-          Remember it?{" "}
-          <Link href="/signin" className="text-[#0E0E0C] hover:text-[#0F52BA] transition-colors hover:underline">
-            Back to sign in
+        <p className="text-center text-[11px] font-black uppercase tracking-widest text-foreground/30 mt-10">
+          Remember secret?{" "}
+          <Link href="/signin" className="text-white hover:text-brand-light transition-colors underline underline-offset-4">
+            Authorize Native
           </Link>
         </p>
 

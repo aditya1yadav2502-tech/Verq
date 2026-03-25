@@ -24,17 +24,10 @@ type Student = {
   top_repos?: { name: string; description: string; url: string; stars: number; language: string }[]
 }
 
-const INTENT_SIGNALS = [
-  "Actively interviewing",
-  "Open to roles",
-  "Looking for React roles",
-  "Exploring ML roles",
-  "Casual looking",
-]
-
 const getMockIntent = (name: string) => {
-  if (!name) return INTENT_SIGNALS[1]
-  return INTENT_SIGNALS[name.length % INTENT_SIGNALS.length]
+  const intents = ["Actively interviewing", "Open to roles", "Exploring ML roles", "Hiring Priority"]
+  if (!name) return intents[1]
+  return intents[name.length % intents.length]
 }
 
 export default function ExploreClient({ initialStudents }: { initialStudents: Student[] }) {
@@ -89,9 +82,7 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
       body: JSON.stringify({ student_email: email })
     })
     
-    if (!res.ok) {
-      setBookmarks(bookmarks)
-    }
+    if (!res.ok) setBookmarks(bookmarks)
   }
 
   const filteredStudents = useMemo(() => {
@@ -103,7 +94,6 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
         
         const matchesScore = s.verq_score >= minScore
         
-        // Multi-dimension filtering
         const matchesDimensions = 
           s.score_code_quality >= dimensionFilters.score_code_quality &&
           s.score_project_complexity >= dimensionFilters.score_project_complexity &&
@@ -127,28 +117,17 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
       })
   }, [initialStudents, searchQuery, minScore, sortBy, dimensionFilters, activeStack, activeAvailability])
 
-  function getScoreColor(score: number) {
-    if (score >= 70) return "text-[#0A7250] bg-[#E4F4EE]/50 border-[#0A7250]/20"
-    if (score >= 40) return "text-[#0F52BA] bg-[#E8EFFE]/80 border-[#0F52BA]/20"
-    return "text-[#D97706] bg-[#FEF3C7]/60 border-[#D97706]/20"
-  }
-
-  function getBarColor(score: number) {
-    if (score >= 70) return "bg-gradient-to-r from-[#0A7250] to-[#10b981]"
-    if (score >= 40) return "bg-gradient-to-r from-[#0F52BA] to-[#3b82f6]"
-    return "bg-gradient-to-r from-[#D97706] to-[#f59e0b]"
-  }
-
   return (
-    <main className="min-h-screen bg-[#FAFAFA] pt-24 pb-20 selection:bg-[#0F52BA]/20">
+    <main className="min-h-screen bg-background pt-32 pb-20 selection:bg-brand/20 bg-grain relative">
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[20%] right-[10%] w-[600px] h-[600px] bg-brand/5 rounded-full filter blur-[150px] animate-pulse-slow" />
+        <div className="absolute bottom-[20%] left-[10%] w-[500px] h-[500px] bg-white/5 rounded-full filter blur-[150px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
+      </div>
+
       <Navbar />
 
-      <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 relative grid grid-cols-1 lg:grid-cols-[300px_1fr_340px] gap-10">
+      <div className="max-w-[1600px] mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-[320px_1fr_360px] gap-12">
         
-        {/* Decorative background blur */}
-        <div className="absolute top-0 right-10 w-96 h-96 bg-[#0F52BA]/05 rounded-full filter blur-[100px] pointer-events-none" />
-
-        {/* Left Sidebar: Advanced Filters */}
         <FilterSidebar 
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -162,162 +141,100 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
           setDimensionFilter={setDimensionFilter}
         />
 
-        {/* Middle Column: Results */}
-        <section className="animate-slide-up relative z-10" style={{ animationDelay: '0.1s' }}>
-          
-          <div className="flex items-center justify-between mb-6 block lg:hidden">
-            <h1 className="font-serif text-3xl text-[#0E0E0C] font-bold tracking-tight">Terminal</h1>
-          </div>
-
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-sm font-medium text-[#6A6A66]">
-              Showing <span className="text-[#0E0E0C]">{filteredStudents.length}</span> verified builder{filteredStudents.length !== 1 ? 's' : ''}
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-[#9A9A95] uppercase tracking-widest font-mono">Sort By</span>
+        {/* Results */}
+        <section className="animate-fade-in-up relative z-10">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-baseline gap-4">
+               <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white text-shine">Verified Builders</h2>
+               <span className="text-[10px] font-black uppercase tracking-widest text-foreground-muted">{filteredStudents.length} Native Signals</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-[10px] text-foreground-muted uppercase tracking-[0.2em] font-black">Optimization</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-transparent text-sm font-semibold text-[#0E0E0C] outline-none cursor-pointer"
+                className="bg-transparent border border-white/10 rounded-full px-4 py-1.5 text-xs font-bold text-white outline-none cursor-pointer hover:bg-white/10 transition-colors backdrop-blur-md shadow-sm focus:border-brand/50 focus:ring-1 focus:ring-brand/50"
               >
-                <option value="overall">Score</option>
-                <option value="quality">Quality</option>
-                <option value="complexity">Complexity</option>
+                <option className="bg-[#0A0A0A]" value="overall">Verq Score</option>
+                <option className="bg-[#0A0A0A]" value="quality">Quality</option>
+                <option className="bg-[#0A0A0A]" value="complexity">Complexity</option>
               </select>
             </div>
           </div>
 
           {filteredStudents.length === 0 ? (
-            <div className="bg-white border border-black/5 rounded-[2rem] p-16 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center">
-              <div className="w-16 h-16 bg-[#FAFAFA] rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <span className="font-serif text-3xl text-[#9A9A95]">?</span>
-              </div>
-              <p className="font-serif text-2xl text-[#0E0E0C] font-bold mb-2">No builders found</p>
-              <p className="text-[#6A6A66]">
-                Try adjusting your search query or lowering the minimum score.
+            <div className="glass-card rounded-[3rem] p-20 text-center border-dashed border-white/20">
+              <span className="font-serif text-6xl text-brand-light italic mb-6 block text-shine opacity-50">?</span>
+              <p className="font-serif text-3xl text-white font-bold mb-4 tracking-tight">No Signal Found</p>
+              <p className="text-foreground-muted max-w-sm mx-auto font-medium">
+                No builders match your current intensity filters. Try broadening your parameters across the dimensions.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredStudents.map((student, index) => (
                 <Link
                   key={student.email || index}
                   href={`/s/${encodeURIComponent(student.name)}`}
-                  className="bg-white border border-black/5 rounded-3xl p-6 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 hover:border-black/10 transition-all duration-300 group relative overflow-hidden flex flex-col h-full"
+                  className="glass-card rounded-[2.5rem] p-8 hover:bg-white/[0.04] hover:-translate-y-1 hover:border-brand/30 transition-all duration-500 group relative overflow-hidden flex flex-col h-full shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_rgba(0,230,91,0.15)]"
                 >
-                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                  <div className="flex items-start justify-between mb-4 relative">
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-brand/5 rounded-full filter blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                  
+                  <div className="flex items-start justify-between mb-8 relative z-10">
+                    <div className="flex items-center gap-5">
+                      <div className="w-16 h-16 bg-white rounded-[1.25rem] flex items-center justify-center font-serif text-4xl text-background font-black italic shadow-inner group-hover:scale-105 group-hover:-rotate-3 transition-transform duration-500">
+                        {student.name?.charAt(0).toUpperCase() || "?"}
+                      </div>
+                      <div>
+                        <h3 className="font-serif text-2xl font-bold text-white group-hover:text-brand-light transition-colors tracking-tight">{student.name}</h3>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse shadow-[0_0_8px_rgba(0,230,91,0.8)]"></span>
+                          <span className="text-[10px] font-black font-mono uppercase tracking-[0.2em] text-foreground-muted">{getMockIntent(student.name)}</span>
+                        </div>
+                      </div>
+                    </div>
                     {isCompany && student.email && (
                       <button 
                         onClick={(e) => toggleBookmark(e, student.email)}
-                        className={`absolute -top-2 -right-2 p-2 rounded-full backdrop-blur-md transition-all z-20 ${
-                          bookmarks.has(student.email) ? "bg-[#FEF3C7] shadow-sm scale-100" : "bg-white/50 hover:bg-black/5 opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100"
-                        }`}
-                        title={bookmarks.has(student.email) ? "Remove shortlist" : "Shortlist builder"}
+                        className={`p-2 rounded-full transition-all ${bookmarks.has(student.email) ? "text-brand" : "text-white/20 hover:text-brand-light hover:bg-brand/10"}`}
                       >
-                        <span className="text-[14px] leading-none block transform group-active:scale-90 transition-transform">
-                          {bookmarks.has(student.email) ? "⭐" : "☆"}
-                        </span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill={bookmarks.has(student.email) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                       </button>
                     )}
-                    
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] rounded-2xl flex items-center justify-center shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
-                        <div className="w-[88%] h-[88%] bg-white rounded-xl flex items-center justify-center">
-                          <span className="font-serif text-lg text-[#0F52BA] font-bold">
-                            {student.name?.charAt(0).toUpperCase() || "?"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                           <p className="text-base font-bold text-[#0E0E0C] group-hover:text-[#0F52BA] transition-colors truncate">
-                            {student.name}
-                          </p>
-                          <div className="flex gap-1" title="Industry Verified">
-                             <div className="w-4 h-4 bg-[#0F52BA]/10 rounded-full flex items-center justify-center border border-[#0F52BA]/20">
-                                <span className="text-[8px]">📹</span>
-                             </div>
-                             <div className="w-4 h-4 bg-[#0A7250]/10 rounded-full flex items-center justify-center border border-[#0A7250]/20">
-                                <span className="text-[8px]">📱</span>
-                             </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0A7250] animate-pulse"></span>
-                          <p className="text-[11px] font-medium text-[#0A7250] truncate">
-                            {getMockIntent(student.name)}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Contact Blur Paywall */}
-                      <div className="hidden sm:flex items-center gap-2 bg-[#FAFAFA] border border-black/5 rounded-xl px-3 py-1.5 relative group/blur cursor-pointer" onClick={() => setIsPricingOpen(true)}>
-                         <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] rounded-xl z-10 flex items-center justify-center opacity-0 group-hover/blur:opacity-100 transition-opacity">
-                            <span className="text-[9px] font-black uppercase text-[#0F52BA] tracking-widest bg-white shadow-sm px-2 py-0.5 rounded-md">Unlock Contact</span>
-                         </div>
-                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6A6A66" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                         <span className="text-xs font-mono text-[#6A6A66] blur-[4px] select-none">
-                           hired@candidate.com
-                         </span>
-                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2.5" className="ml-1"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col items-end gap-2">
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={(e) => toggleBookmark(e, student.email)}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                            bookmarks.has(student.email)
-                              ? "bg-red-50 text-red-500 border border-red-200 shadow-sm"
-                              : "bg-[#FAFAFA] text-[#6A6A66] border border-black/5 hover:bg-white hover:border-red-200 hover:text-red-500"
-                          }`}
-                          title="Save Profile - Notifies builder"
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill={bookmarks.has(student.email) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                          <span className="hidden sm:inline-block tracking-wide">
-                            {bookmarks.has(student.email) ? "Saved" : "Save"}
-                          </span>
-                        </button>
-                        <div className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-lg border shadow-sm ${getScoreColor(student.verq_score)}`}>
-                          Verified
-                        </div>
-                      </div>
-                      <button 
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setSelectedStudent(student)
-                          setIsQuickViewOpen(true)
-                        }}
-                        className="text-[10px] font-black uppercase tracking-widest text-[#6A6A66] hover:text-[#0F52BA] transition-colors bg-black/5 px-2 py-1 rounded-md"
-                      >
-                        Quick View
-                      </button>
-                    </div>
                   </div>
 
-                  {/* College Context */}
-                  {student.college && (
-                    <div className="mb-4">
-                       <p className="text-xs text-[#6A6A66] truncate flex items-center gap-1.5">
-                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                         {student.college}
-                       </p>
-                    </div>
-                  )}
+                  <div className="mb-6 space-y-4 relative z-10">
+                    <p className="text-[10px] font-black font-mono uppercase tracking-[0.25em] text-foreground-muted mb-2 group-hover:text-white transition-colors">Skill Fingerprint</p>
+                    {[
+                      { l: "Quality", v: student.score_code_quality },
+                      { l: "Complexity", v: student.score_project_complexity },
+                      { l: "Commits", v: student.score_commit_consistency },
+                    ].map(d => (
+                      <div key={d.l} className="group/bar">
+                        <div className="flex justify-between items-baseline mb-1.5">
+                          <span className="text-[10px] font-bold text-foreground-muted group-hover/bar:text-white">{d.l}</span>
+                          <span className="text-[10px] font-black text-brand-light font-mono group-hover/bar:scale-110 transition-transform">{d.v}%</span>
+                        </div>
+                        <div className="h-1.5 bg-black/40 shadow-inner rounded-full overflow-hidden">
+                          <div className="h-full bg-brand shadow-[0_0_8px_rgba(0,230,91,0.5)] transition-all duration-1000 ease-out" style={{ width: `${d.v}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-                  <div className="mt-auto bg-[#FAFAFA] border border-black/5 rounded-2xl p-4 group-hover:bg-white transition-colors text-balance">
-                    <p className="text-xs font-medium text-[#6A6A66] leading-relaxed group-hover:text-[#0E0E0C] transition-colors">
-                      {getSkillFingerprint({
+                  <div className="mt-auto pt-6 border-t border-white/10 relative z-10 flex items-center justify-between">
+                    <p className="text-[11px] font-medium text-foreground-muted leading-relaxed italic line-clamp-2 pr-4">
+                      "{getSkillFingerprint({
                         code_quality: student.score_code_quality || 0,
                         project_complexity: student.score_project_complexity || 0,
                         commit_consistency: student.score_commit_consistency || 0,
                         documentation: student.score_documentation || 0,
                         deployment: student.score_deployment || 0
-                      })}
+                      })}"
                     </p>
+                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-brand/20 group-hover:border-brand/40 transition-colors">
+                       <span className="text-white text-xs font-bold group-hover:text-brand-light transition-colors group-hover:translate-x-0.5 transform duration-300">↗</span>
+                    </div>
                   </div>
                 </Link>
               ))}
@@ -325,8 +242,8 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
           )}
         </section>
 
-        {/* Right Sidebar: Market Insights & Pulse */}
-        <aside className="animate-slide-up sticky top-28 h-fit hidden lg:block space-y-8" style={{ animationDelay: '0.2s' }}>
+        {/* Pulse */}
+        <aside className="animate-fade-in-up sticky top-28 h-fit hidden lg:block" style={{ animationDelay: '0.2s' }}>
           <PulseFeed />
         </aside>
 
@@ -348,3 +265,4 @@ export default function ExploreClient({ initialStudents }: { initialStudents: St
     </main>
   )
 }
+

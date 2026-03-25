@@ -11,23 +11,25 @@ function NavbarContent() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [role, setRole] = useState<string | null>(null)
+  const [scrolled, setScrolled] = useState(false)
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const isCompanyPreview = searchParams.get("preview") === "true"
-
   const [localViewMode, setLocalViewMode] = useState<string | null>(null)
 
   useEffect(() => {
-    // Initial load
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll)
+    
     const saved = localStorage.getItem("verqify_view_mode")
     setLocalViewMode(saved)
 
-    // Listen for changes
     const handleStorage = () => {
       const mode = localStorage.getItem("verqify_view_mode")
       setLocalViewMode(mode)
     }
-
     window.addEventListener("view_mode_changed", handleStorage)
 
     const supabase = createClient()
@@ -39,104 +41,115 @@ function NavbarContent() {
       setLoading(false)
     })
 
-    return () => window.removeEventListener("view_mode_changed", handleStorage)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("view_mode_changed", handleStorage)
+    }
   }, [])
 
-  // Determine display mode: "company" if explicitly company role, preview mode, on company pages, or localStorage says so (for landing page)
   const isCompanyMode = role === "company" || isCompanyPreview || pathname.startsWith("/company") || (!user && localViewMode === "company")
 
-
   return (
-    <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 animate-slide-up">
-      <nav className="flex items-center justify-between px-4 sm:px-5 h-14 w-full max-w-4xl bg-white/70 backdrop-blur-xl border border-black/5 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.06)] relative overflow-hidden">
-        
-        {/* Subtle top edge highlight */}
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent" />
-
+    <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 animate-fade-in-up">
+      <nav 
+        className={`flex items-center justify-between px-6 h-14 max-w-5xl rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          scrolled ? "w-full max-w-4xl glass-card border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.8)]" : "w-full bg-transparent border border-transparent"
+        }`}
+      >
+        {/* Logo */}
         <Link 
-          href={user || isCompanyPreview ? "/" : "#"} 
-          title={user || isCompanyPreview ? "Home" : ""} 
-          className={`flex items-center gap-2 relative z-10 mr-2 sm:mr-4 shrink-0 ${user || isCompanyPreview ? "transition-transform hover:scale-105 cursor-pointer" : "cursor-default"}`}
+          href="/" 
+          className="flex items-center gap-2 relative z-10 transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
         >
-          <div className="w-8 h-8 bg-gradient-to-br from-[#0F52BA] to-[#0A3D8F] rounded-full flex items-center justify-center shadow-inner shrink-0">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="drop-shadow-sm">
-              <path d="M3 13L8 3L13 13" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M5 9.5H11" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-            </svg>
+          <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center shadow-[0_0_15px_rgba(0,230,91,0.4)]">
+            <span className="font-serif-italic text-lg font-black text-background italic leading-none pt-1">V</span>
           </div>
-          <span className="font-serif text-lg font-bold text-[#0E0E0C] tracking-tight hidden md:block">Verqify</span>
+          <span className="font-serif-italic text-2xl font-bold text-white italic tracking-tighter">Verqify</span>
         </Link>
 
+        {/* Center Links */}
+        <div className="hidden md:flex flex-1 items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2 z-10">
+          {!user && !isCompanyPreview ? (
+            <>
+              <Link href="#" className="nav-link text-[11px] font-bold uppercase tracking-[0.15em] text-foreground-muted hover:text-white transition-colors">Builders</Link>
+              <Link href="#" className="nav-link text-[11px] font-bold uppercase tracking-[0.15em] text-foreground-muted hover:text-white transition-colors">For Companies</Link>
+              <Link href="#" className="nav-link text-[11px] font-bold uppercase tracking-[0.15em] text-foreground-muted hover:text-white transition-colors">How It Works</Link>
+            </>
+          ) : (
+            <>
+              <Link href="/" className="nav-link text-[11px] font-bold uppercase tracking-[0.15em] text-foreground-muted hover:text-white transition-colors">Home</Link>
+              <Link 
+                href={isCompanyMode ? "/explore" : "/leaderboard"} 
+                className="nav-link text-[11px] font-bold uppercase tracking-[0.15em] text-foreground-muted hover:text-white transition-colors"
+                data-active={pathname === (isCompanyMode ? "/explore" : "/leaderboard")}
+              >
+                {isCompanyMode ? "Search ATS" : "Leaderboard"}
+              </Link>
+              <Link 
+                href={isCompanyMode ? "/company/dashboard" : "/dashboard"} 
+                className="nav-link text-[11px] font-bold uppercase tracking-[0.15em] text-foreground-muted hover:text-white transition-colors"
+                data-active={pathname.includes("/dashboard")}
+              >
+                Dashboard
+              </Link>
+            </>
+          )}
+        </div>
 
-        {/* The switch gear has been removed. Experience is now role-based. */}
-        <div className="flex-1 flex justify-center" />
-
-        {!loading && (
-          <div className="flex items-center justify-end gap-1 sm:gap-2 relative z-10">
-            {(user || isCompanyPreview) && (
-              <>
-                <Link
-                  href="/"
-                  className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5"
-                >
-                  Home
-                </Link>
-
-                {!isCompanyMode ? (
-                  <Link
-                    href="/leaderboard"
-                    className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5 hidden sm:block"
-                  >
-                    Leaderboard
-                  </Link>
-                ) : (
-                  <Link
-                    href="/explore"
-                    className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5 hidden sm:block"
-                  >
-                    Search ATS
-                  </Link>
-                )}
-
-                <Link
-                  href={isCompanyMode ? "/company/dashboard" : "/dashboard"}
-                  className="text-sm font-medium text-[#6A6A66] hover:text-[#0E0E0C] hover:bg-black/5 rounded-full transition-all px-3 py-1.5"
-                >
-                  Dashboard
-                </Link>
-              </>
-            )}
-
-            {user || isCompanyPreview ? (
-              <div className="flex items-center gap-3 ml-1 pl-3 border-l border-black/10">
+        {/* Auth CTAs */}
+        <div className="flex items-center justify-end gap-4 min-w-[140px] relative z-10">
+          {!loading && (
+             user || isCompanyPreview ? (
+              <div className="flex items-center gap-4">
                 {!user && isCompanyPreview && (
-                   <span className="text-[10px] font-black uppercase tracking-widest text-[#0F52BA] bg-[#0F52BA]/5 px-2 py-1 rounded-md">Preview</span>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-brand bg-brand/10 border border-brand/20 px-2 py-1 rounded-md">Preview</span>
                 )}
                 <SignOutButton />
               </div>
             ) : (
-              <div className="flex items-center gap-1 ml-1 sm:ml-2">
-                <Link
-                  href={!isCompanyMode ? "/signup" : "/company/signup"}
-                  className={`text-sm font-semibold text-white px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 ${!isCompanyMode ? "bg-[#0E0E0C] hover:bg-[#3B3B38]" : "bg-[#0A7250] hover:bg-[#075A3F]"}`}
-                >
-                  {!isCompanyMode ? "Get your score" : "Hire Developers"}
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
-
-
-
+              <Link
+                href={isCompanyMode ? "/company/signup" : "/signup"}
+                className="relative overflow-hidden group bg-white text-background text-[10px] font-black uppercase tracking-widest px-6 py-2.5 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] active:scale-95"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/80 to-transparent -translate-x-[150%] skew-x-[-15deg] group-hover:animate-shine transition-all z-0" />
+                <span className="relative z-10">Get Access</span>
+              </Link>
+            )
+          )}
+        </div>
       </nav>
+      
+      {/* Global generic nav-link active states css overrides specifically intended for Navbar context */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .nav-link[data-active="true"] {
+           color: var(--foreground);
+        }
+        .nav-link {
+           position: relative;
+        }
+        .nav-link::after {
+           content: '';
+           position: absolute;
+           bottom: -4px;
+           left: 50%;
+           transform: translateX(-50%);
+           width: 0%;
+           height: 2px;
+           background: var(--brand-green);
+           transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+           border-radius: 2px;
+        }
+        .nav-link:hover::after, .nav-link[data-active="true"]::after {
+           width: 100%;
+        }
+      `}} />
     </div>
   )
 }
 
 export default function Navbar() {
   return (
-    <Suspense fallback={<div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4"><div className="h-14 w-full max-w-4xl" /></div>}>
+    <Suspense fallback={<div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4"><div className="h-14 w-full max-w-5xl bg-white/[0.02] border border-white/5 backdrop-blur-md rounded-full" /></div>}>
       <NavbarContent />
     </Suspense>
   )
